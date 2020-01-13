@@ -14,6 +14,8 @@ namespace Mini_C {
     class MINIC2CTranslation : ASTBaseVisitor<int,TranslationParameters> {
         private CCFile m_translatedFile;
 
+        public CCFile M_TranslatedFile => m_translatedFile;
+
         public override int VisitFunctionDefinition(CASTFunctionDefinition node,TranslationParameters param) {
 
             //1. Create Output File
@@ -36,13 +38,19 @@ namespace Mini_C {
             m_translatedFile = new CCFile();
 
             //2. Visit CT_COMPILEUNIT_MAINBODY and create main function
+            CMainFunctionDefinition mainf = new CMainFunctionDefinition(m_translatedFile);
+            m_translatedFile.AddCode(mainf,CodeContextType.CC_FILE_FUNDEF);
+
             VisitContext(node, contextType.CT_COMPILEUNIT_MAINBODY,
-                new TranslationParameters() {M_Parent = m_translatedFile});
+                new TranslationParameters() {M_Parent = mainf });
+
+            // 3. Visit CT_COMPILEUNIT_FUNCTIONDEFINITIONS
+            VisitContext(node, contextType.CT_COMPILEUNIT_FUNCTIONDEFINITIONS,
+                new TranslationParameters() { M_Parent = m_translatedFile });
 
             //3. Visit CT
 
-            //CT_COMPILEUNIT_MAINBODY,
-            //CT_COMPILEUNIT_FUNCTIONDEFINITIONS,
+            
 
             return 0;
         }

@@ -11,14 +11,12 @@ namespace Mini_C
     {
         CB_NA=-1,
         CB_FILE=0,
-        CB_PREPROCESSORDIRECTIVES=3,
-        CB_GLOBALVARIABLES=4,
-        CB_FUNCTIONDEFINITION=5
+       CB_FUNCTIONDEFINITION=3
     };
 
     public enum CodeContextType
     {
-        CC_NA,
+        CC_NA=-1,
         CC_FILE_PREPROCESSOR,
         CC_FILE_GLOBALVARS,
         CC_FILE_FUNDEF,
@@ -76,8 +74,11 @@ namespace Mini_C
         private static int m_clusterSerial=0;
 
        
-        protected CComboContainer(CodeBlockType nodeType,CComboContainer parent) : base(nodeType,parent) {
-            
+        protected CComboContainer(CodeBlockType nodeType,CComboContainer parent,int numcontexts) : base(nodeType,parent) {
+            m_repository = new List<CEmmitableCodeContainer>[numcontexts];
+            for (int i = 0; i < numcontexts; i++) {
+                m_repository[i] = new List<CEmmitableCodeContainer>();
+            }
         }
 
         public override void AddCode(string code, CodeContextType context)

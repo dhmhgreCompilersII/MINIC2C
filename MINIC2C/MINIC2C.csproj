@@ -65,6 +65,7 @@
     </Compile>
     <Compile Include="MINIC2CTranslation.cs" />
     <Compile Include="STPrinter.cs" />
+    <None Include="bin\Debug\CodeStructure.dot" />
     <None Include="bin\Debug\test.ast.dot" />
     <None Include="bin\Debug\test.dot" />
     <None Include="obj\Debug\MINICBaseListener.cs" />
@@ -85,6 +86,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="bin\Debug\CodeStructure.gif" />
     <Content Include="bin\Debug\test.ast.dot.gif" />
     <Content Include="bin\Debug\test.gif" />
     <Content Include="bin\Debug\test.txt" />

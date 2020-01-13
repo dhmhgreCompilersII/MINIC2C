@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Mini_C
 {
     public class CCFunctionDefinition : CComboContainer {
-        public CCFunctionDefinition(CComboContainer parent) : base(CodeBlockType.CB_FUNCTIONDEFINITION,parent) {
+        public CCFunctionDefinition(CComboContainer parent) : base(CodeBlockType.CB_FUNCTIONDEFINITION,parent,3) {
         }
 
         public override CodeContainer AssemblyCodeContainer() {
@@ -17,6 +17,7 @@ namespace Mini_C
         }
 
         public override void PrintStructure(StreamWriter m_ostream) {
+            ExtractSubgraphs(m_ostream, CodeContextType.CC_FUNCTIONDEFINITION_DECLARATIONS);
             ExtractSubgraphs(m_ostream,CodeContextType.CC_FUNCTIONDEFINITION_BODY);
             ExtractSubgraphs(m_ostream,CodeContextType.CC_FUNCTIONDEFINITION_HEADER);
 
@@ -25,14 +26,17 @@ namespace Mini_C
                     codeContainer.PrintStructure(m_ostream);
                 }
             }
-
             m_ostream.WriteLine("\"{0}\"->\"{1}\"", M_Parent.M_NodeName, M_NodeName);
-            
+        }
+    }
+
+    public class CMainFunctionDefinition : CCFunctionDefinition {
+        public CMainFunctionDefinition(CComboContainer parent) : base(parent) {
         }
     }
 
     public class CCFile : CComboContainer {
-        public CCFile() : base(CodeBlockType.CB_FILE,null) {
+        public CCFile() : base(CodeBlockType.CB_FILE,null,3) {
         }
 
         public override CodeContainer AssemblyCodeContainer() {
@@ -47,7 +51,7 @@ namespace Mini_C
 
             ExtractSubgraphs(m_ostream, CodeContextType.CC_FILE_GLOBALVARS);
             ExtractSubgraphs(m_ostream, CodeContextType.CC_FILE_PREPROCESSOR);
-            ExtractSubgraphs(m_ostream, CodeContextType.CC_FUNCTIONDEFINITION_DECLARATIONS);
+            ExtractSubgraphs(m_ostream, CodeContextType.CC_FILE_FUNDEF);
 
             foreach (List<CEmmitableCodeContainer> cEmmitableCodeContainers in m_repository) {
                 foreach (CEmmitableCodeContainer codeContainer in cEmmitableCodeContainers) {
@@ -60,7 +64,7 @@ namespace Mini_C
             // Prepare the process to run
             ProcessStartInfo start = new ProcessStartInfo();
             // Enter in the command line arguments, everything you would enter after the executable name itself
-            start.Arguments = "-Tgif FileStructure.dot" + " -o" + "FileStructure.gif";
+            start.Arguments = "-Tgif CodeStructure.dot " + " -o" + " CodeStructure.gif";
             // Enter the executable to run, including the complete path
             start.FileName = "dot";
             // Do you want to show a console window?
