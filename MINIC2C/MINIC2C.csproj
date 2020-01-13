@@ -55,12 +55,15 @@
     <Compile Include="ASTElementConcrete.cs" />
     <Compile Include="ASTGenerator.cs" />
     <Compile Include="ASTPrinter.cs" />
+    <Compile Include="CodeContainerComposite.cs" />
+    <Compile Include="CodeContainerCompositeConcrete.cs" />
     <Compile Include="MINIC.g4.lexer.cs">
       <DependentUpon>MINIC.g4</DependentUpon>
     </Compile>
     <Compile Include="MINIC.g4.parser.cs">
       <DependentUpon>MINIC.g4</DependentUpon>
     </Compile>
+    <Compile Include="MINIC2CTranslation.cs" />
     <Compile Include="STPrinter.cs" />
     <None Include="bin\Debug\test.ast.dot" />
     <None Include="bin\Debug\test.dot" />

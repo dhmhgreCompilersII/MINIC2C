@@ -101,7 +101,7 @@ namespace Mini_C
             return "\"" + m_nodeType + "_" + m_serial + "\"";
         }
 
-        public abstract T Accept<T>(ASTBaseVisitor<T> visitor);
+        public abstract Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor, VParam param);
 
         public ASTElement MParent
         {

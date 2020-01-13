@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Mini_C
 {
-    class ASTPrinter : ASTBaseVisitor<int>
+    class ASTPrinter : ASTBaseVisitor<int,object>
     {
         private static int m_clusterSerial = 0;
         private StreamWriter m_ostream;
@@ -45,7 +45,7 @@ namespace Mini_C
             }
         }
 
-        public override int VisitCOMPILEUNIT(CASTCompileUnit node)
+        public override int VisitCOMPILEUNIT(CASTCompileUnit node,object param)
         {
 
             m_ostream.WriteLine("digraph {");
@@ -53,7 +53,7 @@ namespace Mini_C
             ExtractSubgraphs(node, contextType.CT_COMPILEUNIT_MAINBODY);
             ExtractSubgraphs(node, contextType.CT_COMPILEUNIT_FUNCTIONDEFINITIONS);
 
-            base.VisitCOMPILEUNIT(node);
+            base.VisitCOMPILEUNIT(node,param);
 
             m_ostream.WriteLine("}");
             m_ostream.Close();
@@ -82,19 +82,19 @@ namespace Mini_C
             return 0;
         }
 
-        public override int VisitIDENTIFIER(CASTIDENTIFIER node)
+        public override int VisitIDENTIFIER(CASTIDENTIFIER node,object param)
         {
             m_ostream.WriteLine("{0}->{1}", node.MParent.MNodeName, node.MNodeName);
             return base.VisitIDENTIFIER(node);
         }
 
-        public override int VisitNUMBER(CASTNUMBER node)
+        public override int VisitNUMBER(CASTNUMBER node, object param)
         {
             m_ostream.WriteLine("{0}->{1}", node.MParent.MNodeName, node.MNodeName);
             return base.VisitNUMBER(node);
         }
 
-        public override int VisitAddition(CASTExpressionAddition node)
+        public override int VisitAddition(CASTExpressionAddition node, object param)
         {
 
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_ADDITION_LEFT);
@@ -107,7 +107,7 @@ namespace Mini_C
             return 0;
         }
 
-        public override int VisitSubtraction(CASTExpressionSubtraction node)
+        public override int VisitSubtraction(CASTExpressionSubtraction node, object param)
         {
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_SUBTRACTION_LEFT);
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_SUBTRACTION_RIGHT);
@@ -119,7 +119,7 @@ namespace Mini_C
             return 0;
         }
 
-        public override int VisitMultiplication(CASTExpressionMultiplication node)
+        public override int VisitMultiplication(CASTExpressionMultiplication node, object param)
         {
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_MULTIPLICATION_LEFT);
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_MULTIPLICATION_RIGHT);
@@ -131,7 +131,7 @@ namespace Mini_C
             return 0;
         }
 
-        public override int VisitDivision(CASTExpressionDivision node)
+        public override int VisitDivision(CASTExpressionDivision node, object param)
         {
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_DIVISION_LEFT);
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_DIVISION_RIGHT);
@@ -143,7 +143,7 @@ namespace Mini_C
             return 0;
         }
 
-        public override int VisitASSIGN(CASTExpressionAssign node)
+        public override int VisitASSIGN(CASTExpressionAssign node, object param)
         {
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_ASSIGN_LVALUE);
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_ASSIGN_EXPRESSION);
@@ -154,7 +154,7 @@ namespace Mini_C
 
             return 0;
         }
-        public override int VisitSTATEMENT(CASTStatement node)
+        public override int VisitSTATEMENT(CASTStatement node, object param)
         {
 
             ExtractSubgraphs(node, contextType.CT_STATEMENT);
@@ -164,7 +164,7 @@ namespace Mini_C
             return 0; 
         }
 
-        public override int VisitFunctionDefinition(CASTFunctionDefinition node)
+        public override int VisitFunctionDefinition(CASTFunctionDefinition node, object param)
         {
             ExtractSubgraphs(node, contextType.CT_FUNCTION_IDENTIFIER);
             ExtractSubgraphs(node, contextType.CT_FUNCTION_FARGS);
@@ -175,7 +175,7 @@ namespace Mini_C
 
             return 0;
         }
-        public override int VisitSTATEMENTLIST(CASTStatementList node)
+        public override int VisitSTATEMENTLIST(CASTStatementList node, object param)
         {
             ExtractSubgraphs(node, contextType.CT_STATEMENTLIST);
             base.VisitSTATEMENTLIST(node);
@@ -183,7 +183,7 @@ namespace Mini_C
             return 0;
         }
 
-        public override int VisitWHILESTATEMENT(CASTWhileStatement node)
+        public override int VisitWHILESTATEMENT(CASTWhileStatement node, object param)
         {
             ExtractSubgraphs(node, contextType.CT_WHILESTATEMENT_CONDITION);
             ExtractSubgraphs(node, contextType.CT_WHILESTATEMENT_BODY);
@@ -192,7 +192,7 @@ namespace Mini_C
             return 0;
         }
 
-        public override int VisitPLUS(CASTExpressionPlus node)
+        public override int VisitPLUS(CASTExpressionPlus node, object param)
         {
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_PLUS);
             base.VisitPLUS(node);
@@ -200,7 +200,7 @@ namespace Mini_C
             return 0;
         }
 
-        public override int VisitMINUS(CASTExpressionMinus node)
+        public override int VisitMINUS(CASTExpressionMinus node, object param)
         {
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_MINUS);
             base.VisitMINUS(node);
@@ -209,7 +209,7 @@ namespace Mini_C
         }
         
 
-        public override int VisitNOT(CASTExpressionNot node)
+        public override int VisitNOT(CASTExpressionNot node, object param)
         {
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_NOT);
             base.VisitNOT(node);
@@ -217,7 +217,7 @@ namespace Mini_C
             return 0;
         }
 
-        public override int VisitAND(CASTExpressionAnd node)
+        public override int VisitAND(CASTExpressionAnd node, object param)
         {
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_AND_LEFT);
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_AND_RIGHT);
@@ -226,7 +226,7 @@ namespace Mini_C
             return 0;
         }
 
-        public override int VisitOR(CASTExpressionOr node)
+        public override int VisitOR(CASTExpressionOr node, object param)
         {
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_OR_LEFT);
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_OR_RIGHT);
@@ -235,7 +235,7 @@ namespace Mini_C
             return 0;
         }
 
-        public override int VisitGT(CASTExpressionGt node)
+        public override int VisitGT(CASTExpressionGt node, object param)
         {
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_GT_LEFT);
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_GT_RIGHT);
@@ -244,7 +244,7 @@ namespace Mini_C
             return 0;
         }
 
-        public override int VisitGTE(CASTExpressionGte node)
+        public override int VisitGTE(CASTExpressionGte node, object param)
         {
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_GTE_LEFT);
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_GTE_RIGHT);
@@ -253,7 +253,7 @@ namespace Mini_C
             return 0;
         }
 
-        public override int VisitLT(CASTExpressionLt node)
+        public override int VisitLT(CASTExpressionLt node, object param)
         {
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_LT_LEFT);
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_LT_RIGHT);
@@ -262,7 +262,7 @@ namespace Mini_C
             return 0;
         }
 
-        public override int VisitLTE(CASTExpressionLte node)
+        public override int VisitLTE(CASTExpressionLte node, object param)
         {
 
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_LTE_LEFT);
@@ -272,7 +272,7 @@ namespace Mini_C
             return 0;
         }
 
-        public override int VisitEQUAL(CASTExpressionEqual node)
+        public override int VisitEQUAL(CASTExpressionEqual node, object param)
         {
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_EQUAL_LEFT);
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_EQUAL_RIGHT);
@@ -281,7 +281,7 @@ namespace Mini_C
             return 0;
         }
 
-        public override int VisitNEQUAL(CASTExpressionNequal node)
+        public override int VisitNEQUAL(CASTExpressionNequal node, object param)
         {
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_NEQUAL_LEFT);
             ExtractSubgraphs(node, contextType.CT_EXPRESSION_NEQUAL_RIGHT);
@@ -289,7 +289,7 @@ namespace Mini_C
             m_ostream.WriteLine("{0}->{1}", node.MParent.MNodeName, node.MNodeName);
             return 0;
         }
-        public override int VisitCOMPOUNDSTATEMENT(CASTCompoundStatement node)
+        public override int VisitCOMPOUNDSTATEMENT(CASTCompoundStatement node, object param)
         {
             ExtractSubgraphs(node, contextType.CT_COMPOUNDSTATEMENT);
             base.VisitCOMPOUNDSTATEMENT(node);
@@ -297,7 +297,7 @@ namespace Mini_C
             return 0;
         }
 
-        public override int VisitIFSTATEMENT(CASTIfStatement node)
+        public override int VisitIFSTATEMENT(CASTIfStatement node, object param)
         {
             ExtractSubgraphs(node, contextType.CT_IFSTATEMENT_CONDITION);
             ExtractSubgraphs(node, contextType.CT_IFSTATEMENT_IFCLAUSE);

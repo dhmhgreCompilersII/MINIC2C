@@ -13,7 +13,7 @@ namespace Mini_C
         {
             m_nodeName = GenerateNodeName();
         }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitIDENTIFIER(this);
         }
@@ -34,7 +34,7 @@ namespace Mini_C
             m_value = Int32.Parse(numberText);
             m_nodeName = GenerateNodeName();
         }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitNUMBER(this);
         }
@@ -47,184 +47,184 @@ namespace Mini_C
     public class CASTFunctionDefinition : ASTComposite
     {
         public CASTFunctionDefinition(String text, nodeType type, ASTElement parent, int numContexts) : base(text,type, parent, numContexts) { }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitFunctionDefinition(this);
+            return visitor.VisitFunctionDefinition(this,param);
         }
     }
 
     public class CASTExpressionMultiplication : ASTComposite
     {
         public CASTExpressionMultiplication(string text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitMultiplication(this);
+            return visitor.VisitMultiplication(this,param);
         }
     }
 
     public class CASTExpressionDivision : ASTComposite
     {
         public CASTExpressionDivision(string text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitDivision(this);
+            return visitor.VisitDivision(this, param);
         }
     }
 
     public class CASTExpressionAddition : ASTComposite
     {
         public CASTExpressionAddition(string text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitAddition(this);
+            return visitor.VisitAddition(this, param);
         }
     }
 
     public class CASTExpressionSubtraction : ASTComposite
     {
         public CASTExpressionSubtraction(string text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitSubtraction(this);
+            return visitor.VisitSubtraction(this, param);
         }
     }
     public class CASTExpressionPlus : ASTComposite
     {
         public CASTExpressionPlus(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitPLUS(this);
+            return visitor.VisitPLUS(this, param);
         }
     }
 
     public class CASTExpressionMinus : ASTComposite
     {
         public CASTExpressionMinus(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitMINUS(this);
+            return visitor.VisitMINUS(this, param);
         }
     }
     
     public class CASTExpressionAssign : ASTComposite
     {
         public CASTExpressionAssign(string text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitASSIGN(this);
+            return visitor.VisitASSIGN(this, param);
         }
     }
     public class CASTExpressionNot : ASTComposite
     {
         public CASTExpressionNot(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitNOT(this);
+            return visitor.VisitNOT(this, param);
         }
     }
     public class CASTExpressionAnd : ASTComposite
     {
         public CASTExpressionAnd(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitAND(this);
+            return visitor.VisitAND(this, param);
         }
     }
 
     public class CASTExpressionOr : ASTComposite
     {
         public CASTExpressionOr(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitOR(this);
+            return visitor.VisitOR(this, param);
         }
     }
     public class CASTExpressionGt : ASTComposite
     {
         public CASTExpressionGt(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitGT(this);
+            return visitor.VisitGT(this, param);
         }
     }
 
     public class CASTExpressionGte : ASTComposite
     {
         public CASTExpressionGte(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitGTE(this);
+            return visitor.VisitGTE(this, param);
         }
     }
 
     public class CASTExpressionLt : ASTComposite
     {
         public CASTExpressionLt(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitLT(this);
+            return visitor.VisitLT(this, param);
         }
     }
 
     public class CASTExpressionLte : ASTComposite
     {
         public CASTExpressionLte(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitLTE(this);
+            return visitor.VisitLTE(this, param);
         }
     }
 
     public class CASTExpressionEqual : ASTComposite
     {
         public CASTExpressionEqual(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitEQUAL(this);
+            return visitor.VisitEQUAL(this, param);
         }
     }
 
     public class CASTExpressionNequal : ASTComposite
     {
         public CASTExpressionNequal(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitNEQUAL(this);
+            return visitor.VisitNEQUAL(this, param);
         }
     }
     
     public class CASTStatementList : ASTComposite
     {
         public CASTStatementList(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitSTATEMENTLIST(this);
+            return visitor.VisitSTATEMENTLIST(this, param);
         }
     }
     public class CASTCompoundStatement : ASTComposite
     {
         public CASTCompoundStatement(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitCOMPOUNDSTATEMENT(this);
+            return visitor.VisitCOMPOUNDSTATEMENT(this, param);
         }
     }
 
     public class CASTWhileStatement : ASTComposite
     {
         public CASTWhileStatement(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitWHILESTATEMENT(this);
+            return visitor.VisitWHILESTATEMENT(this, param);
         }
     }
 
     public class CASTIfStatement : ASTComposite
     {
         public CASTIfStatement(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitIFSTATEMENT(this);
+            return visitor.VisitIFSTATEMENT(this, param);
         }
     }
 
@@ -232,9 +232,9 @@ namespace Mini_C
     {
         public CASTStatement(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
 
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitSTATEMENT(this);
+            return visitor.VisitSTATEMENT(this, param);
         }
     }
 
@@ -242,9 +242,9 @@ namespace Mini_C
     public class CASTCompileUnit : ASTComposite
     {
         public CASTCompileUnit(string text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
-        public override T Accept<T>(ASTBaseVisitor<T> visitor)
+        public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitCOMPILEUNIT(this);
+            return visitor.VisitCOMPILEUNIT(this, param);
         }
     }
 
