@@ -55,6 +55,8 @@
     <Compile Include="MINIC.g4.parser.cs">
       <DependentUpon>MINIC.g4</DependentUpon>
     </Compile>
+    <Compile Include="STPrinter.cs" />
+    <None Include="bin\Debug\test.dot" />
     <None Include="obj\Debug\MINICBaseListener.cs" />
     <None Include="obj\Debug\MINICBaseVisitor.cs" />
     <None Include="obj\Debug\MINICLexer.cs" />
@@ -71,6 +73,10 @@
       <CustomToolNamespace>MINIC2C</CustomToolNamespace>
     </Antlr4>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bin\Debug\test.gif" />
+    <Content Include="bin\Debug\test.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

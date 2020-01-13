@@ -25,6 +25,10 @@ namespace MINIC2C{
 
             Console.WriteLine(tree.ToStringTree());
 
+            STPrinter ptPrinter = new STPrinter();
+            ptPrinter.Visit(tree);
+
+
         }
     }
 }
