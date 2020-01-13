@@ -49,6 +49,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ANTLRExtensions.cs" />
+    <Compile Include="ASTBaseVisitor.cs" />
+    <Compile Include="ASTElement.cs" />
+    <Compile Include="ASTElementConcrete.cs" />
+    <Compile Include="ASTGenerator.cs" />
+    <Compile Include="ASTPrinter.cs" />
     <Compile Include="MINIC.g4.lexer.cs">
       <DependentUpon>MINIC.g4</DependentUpon>
     </Compile>
@@ -56,6 +62,7 @@
       <DependentUpon>MINIC.g4</DependentUpon>
     </Compile>
     <Compile Include="STPrinter.cs" />
+    <None Include="bin\Debug\test.ast.dot" />
     <None Include="bin\Debug\test.dot" />
     <None Include="obj\Debug\MINICBaseListener.cs" />
     <None Include="obj\Debug\MINICBaseVisitor.cs" />
@@ -75,6 +82,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="bin\Debug\test.ast.dot.gif" />
     <Content Include="bin\Debug\test.gif" />
     <Content Include="bin\Debug\test.txt" />
   </ItemGroup>
