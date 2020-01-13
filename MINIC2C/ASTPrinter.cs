@@ -53,7 +53,7 @@ namespace Mini_C
             ExtractSubgraphs(node, contextType.CT_COMPILEUNIT_MAINBODY);
             ExtractSubgraphs(node, contextType.CT_COMPILEUNIT_FUNCTIONDEFINITIONS);
 
-            base.VisitCOMPILEUNIT(node,param);
+            base.VisitCOMPILEUNIT(node);
 
             m_ostream.WriteLine("}");
             m_ostream.Close();

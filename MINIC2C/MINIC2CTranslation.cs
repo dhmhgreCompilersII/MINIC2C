@@ -17,10 +17,11 @@ namespace Mini_C {
         public override int VisitFunctionDefinition(CASTFunctionDefinition node,TranslationParameters param) {
 
             //1. Create Output File
-            CCFunctionDefinition fundef = new CCFunctionDefinition();
-
-            //2. Add Function Definition to the File
+            CCFunctionDefinition fundef = new CCFunctionDefinition(param.M_Parent);
             
+            //2. Add Function Definition to the File in the appropriate context
+            param.M_Parent.AddCode(fundef,CodeContextType.CC_FILE_FUNDEF);
+
 
 
             //CT_FUNCTION_IDENTIFIER,

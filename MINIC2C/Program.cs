@@ -34,6 +34,9 @@ namespace MINIC2C{
 
             ASTPrinter astPrinter = new ASTPrinter("test.ast.dot");
             astPrinter.Visit(astGenerator.M_Root);
+
+            MINIC2CTranslation tr = new MINIC2CTranslation();
+            tr.VisitCOMPILEUNIT(astGenerator.M_Root as CASTCompileUnit, new TranslationParameters());
         }
     }
 }
