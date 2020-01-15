@@ -148,6 +148,14 @@ namespace Mini_C
             VisitChildren(node,param);
             return default(Result);
         }
+        public virtual Result VisitSTATEMENTEXPRESSION(CASTEpxressionStatement node, VParam param = default(VParam)) {
+            VisitChildren(node, param);
+            return default(Result);
+        }
+        public virtual Result VisitSTATEMENTRETURN(CASTReturnStatement node, VParam param = default(VParam)) {
+            VisitChildren(node, param);
+            return default(Result);
+        }
         public virtual Result VisitSTATEMENT(CASTStatement node, VParam param=default(VParam))
         {
             VisitChildren(node,param);

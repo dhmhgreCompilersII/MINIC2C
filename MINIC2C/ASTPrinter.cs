@@ -183,6 +183,22 @@ namespace Mini_C
             return 0;
         }
 
+        public override int VisitSTATEMENTEXPRESSION(CASTEpxressionStatement node, object param = default(object))
+        {
+            ExtractSubgraphs(node, contextType.CT_STATEMENT_EXPRESSION);
+            base.VisitSTATEMENTEXPRESSION(node);
+            m_ostream.WriteLine("{0}->{1}", node.MParent.MNodeName, node.MNodeName);
+            return 0;
+        }
+
+        public override int VisitSTATEMENTRETURN(CASTReturnStatement node, object param = default(object))
+        {
+            ExtractSubgraphs(node, contextType.CT_STATEMENT_RETURN);
+            base.VisitSTATEMENTRETURN(node);
+            m_ostream.WriteLine("{0}->{1}", node.MParent.MNodeName, node.MNodeName);
+            return 0;
+        }
+
         public override int VisitWHILESTATEMENT(CASTWhileStatement node, object param)
         {
             ExtractSubgraphs(node, contextType.CT_WHILESTATEMENT_CONDITION);

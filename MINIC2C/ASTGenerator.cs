@@ -305,11 +305,35 @@ namespace Mini_C
 
        
 
+        public override int VisitStatement_ReturnStatement(MINICParser.Statement_ReturnStatementContext context)
+        {
+            ASTComposite m_parent = m_parents.Peek();
+            CASTReturnStatement newnode = new CASTReturnStatement(context.GetText(), m_parents.Peek(), 1);
+            m_parent.AddChild(newnode, m_parentContext.Peek());
+            m_parents.Push(newnode);
 
+            this.VisitElementInContext(context.expression(), m_parentContext, contextType.CT_STATEMENT_RETURN);
 
+            m_parents.Pop();
+            return 0;
+        }
 
-        
+       
+        public override int VisitStatement_ExpressionStatement(MINICParser.Statement_ExpressionStatementContext context){
 
+            ASTComposite m_parent = m_parents.Peek();
+            CASTEpxressionStatement newnode = new CASTEpxressionStatement(context.GetText(), m_parents.Peek(), 1);
+            m_parent.AddChild(newnode, m_parentContext.Peek());
+            m_parents.Push(newnode);
+
+            this.VisitElementInContext(context.expression(), m_parentContext, contextType.CT_STATEMENT_EXPRESSION);
+            
+            m_parents.Pop();
+            return 0;
+            return base.VisitStatement_ExpressionStatement(context);
+        }
+
+       
         public override int VisitTerminal(ITerminalNode node)
         {
             ASTComposite m_parent = m_parents.Peek();
