@@ -143,6 +143,11 @@ namespace Mini_C
             m_repository.Append(code);
         }
 
+        public  void AddCode(CodeContainer code)
+        {
+            m_repository.Append(code.m_repository);
+        }
+
         public override string EmmitStdout()
         {
            System.Console.WriteLine(m_repository.ToString());

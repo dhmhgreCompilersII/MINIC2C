@@ -17,12 +17,12 @@ namespace Mini_C {
         }
     }
 
-    class MINIC2CTranslation : ASTBaseVisitor<CEmmitableCodeContainer,TranslationParameters> {
+    class MINIC2CTranslation : ASTBaseVisitor<CodeContainer,TranslationParameters> {
         private CCFile m_translatedFile;
 
         public CCFile M_TranslatedFile => m_translatedFile;
 
-        public override CEmmitableCodeContainer VisitFunctionDefinition(CASTFunctionDefinition node,TranslationParameters param) {
+        public override CodeContainer VisitFunctionDefinition(CASTFunctionDefinition node,TranslationParameters param) {
 
             //1. Create Output File
             CCFunctionDefinition fundef = new CCFunctionDefinition(param.M_Parent);
@@ -53,10 +53,10 @@ namespace Mini_C {
                 M_ContextType = CodeContextType.CC_FUNCTIONDEFINITION_BODY
             });
 
-            return fundef;
+            return null;
         }
 
-        public override CEmmitableCodeContainer VisitCOMPILEUNIT(CASTCompileUnit node, TranslationParameters param) {
+        public override CodeContainer VisitCOMPILEUNIT(CASTCompileUnit node, TranslationParameters param) {
 
             //1. Create Output File
             m_translatedFile = new CCFile();
@@ -80,18 +80,34 @@ namespace Mini_C {
 
             //3. Visit CT
 
-            return m_translatedFile;
+            return null;
         }
 
-        public override CEmmitableCodeContainer VisitASSIGN(CASTExpressionAssign node, TranslationParameters param = default(TranslationParameters)) {
+        public override CodeContainer VisitASSIGN(CASTExpressionAssign node, TranslationParameters param = default(TranslationParameters)) {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY,param.M_Parent);
             param.M_Parent.AddCode(rep,param.M_ContextType);
 
-            
+           
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_ASSIGN_LVALUE,0)));
             rep.AddCode("=");
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_ASSIGN_EXPRESSION,0),param));
+            rep.AddCode(";");
 
             return rep;
             
+        }
+        public override CodeContainer VisitNUMBER(CASTNUMBER node, TranslationParameters param = default(TranslationParameters))
+        {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, null);
+            rep.AddCode(node.M_Text);
+            return rep;
+        }
+
+        public override CodeContainer VisitIDENTIFIER(CASTIDENTIFIER node, TranslationParameters param = default(TranslationParameters))
+        {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, null);
+            rep.AddCode(node.M_Text);
+            return rep;
         }
     }
 }

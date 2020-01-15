@@ -8,7 +8,7 @@ namespace Mini_C
 {
     public abstract class ASTBaseVisitor<Result,VParam>
     {
-        public Result Visit(ASTComposite node, VParam param=default(VParam))
+        public Result Visit(ASTElement node, VParam param=default(VParam))
         {
             return node.Accept(this,param);
         }
