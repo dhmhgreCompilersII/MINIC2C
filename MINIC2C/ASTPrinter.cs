@@ -166,9 +166,9 @@ namespace Mini_C
 
         public override int VisitFunctionDefinition(CASTFunctionDefinition node, object param)
         {
-            ExtractSubgraphs(node, contextType.CT_FUNCTION_IDENTIFIER);
-            ExtractSubgraphs(node, contextType.CT_FUNCTION_FARGS);
-            ExtractSubgraphs(node, contextType.CT_FUNCTION_BODY);
+            ExtractSubgraphs(node, contextType.CT_FUNCTIONDEFINITION_IDENTIFIER);
+            ExtractSubgraphs(node, contextType.CT_FUNCTIONDEFINITION_FARGS);
+            ExtractSubgraphs(node, contextType.CT_FUNCTIONDEFINITION_BODY);
             base.VisitFunctionDefinition(node);
 
             m_ostream.WriteLine("{0}->{1}", node.MParent.MNodeName, node.MNodeName);

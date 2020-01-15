@@ -33,132 +33,130 @@ namespace Mini_C
         }
 
       
-        public virtual Result VisitIDENTIFIER(CASTIDENTIFIER node,VParam param=default(VParam))
-        {
-            VisitChildren(node);
+        public virtual Result VisitIDENTIFIER(CASTIDENTIFIER node,VParam param=default(VParam)){
+            
             return default(Result);
         }
-        public virtual Result VisitNUMBER(CASTNUMBER node, VParam param=default(VParam))
-        {
-            VisitChildren(node);
+        public virtual Result VisitNUMBER(CASTNUMBER node, VParam param=default(VParam)){
+            
             return default(Result);
         }
         public virtual Result VisitFunctionDefinition(CASTFunctionDefinition node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
         public virtual Result VisitMultiplication(CASTExpressionMultiplication node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
         public virtual Result VisitDivision(CASTExpressionDivision node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
         public virtual Result VisitAddition(CASTExpressionAddition node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
         public virtual Result VisitSubtraction(CASTExpressionSubtraction node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
         public virtual Result VisitPLUS(CASTExpressionPlus node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
         public virtual Result VisitMINUS(CASTExpressionMinus node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
         
         public virtual Result VisitASSIGN(CASTExpressionAssign node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
         public virtual Result VisitNOT(CASTExpressionNot node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
         public virtual Result VisitAND(CASTExpressionAnd node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
         public virtual Result VisitOR(CASTExpressionOr node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
         public virtual Result VisitGT(CASTExpressionGt node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
         public virtual Result VisitGTE(CASTExpressionGte node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
         public virtual Result VisitLT(CASTExpressionLt node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
         public virtual Result VisitLTE(CASTExpressionLte node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
         public virtual Result VisitEQUAL(CASTExpressionEqual node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
         public virtual Result VisitNEQUAL(CASTExpressionNequal node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
        
         public virtual Result VisitSTATEMENTLIST(CASTStatementList node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
         public virtual Result VisitCOMPOUNDSTATEMENT(CASTCompoundStatement node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
         public virtual Result VisitIFSTATEMENT(CASTIfStatement node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
         public virtual Result VisitWHILESTATEMENT(CASTWhileStatement node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
         public virtual Result VisitSTATEMENT(CASTStatement node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
                                            
         public virtual Result VisitCOMPILEUNIT(CASTCompileUnit node, VParam param=default(VParam))
         {
-            VisitChildren(node);
+            VisitChildren(node,param);
             return default(Result);
         }
 

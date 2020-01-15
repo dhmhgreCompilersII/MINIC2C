@@ -11,7 +11,8 @@ namespace Mini_C
     {
         CB_NA=-1,
         CB_FILE=0,
-       CB_FUNCTIONDEFINITION=3
+        CB_FUNCTIONDEFINITION=3,
+        CB_CODEREPOSITORY=6
     };
 
     public enum CodeContextType
@@ -137,7 +138,7 @@ namespace Mini_C
         public CodeContainer(CodeBlockType nodeType,CComboContainer parent) : base(nodeType,parent) {
         }
 
-        public override void AddCode(string code, CodeContextType context)
+        public override void AddCode(string code, CodeContextType context=CodeContextType.CC_NA)
         {
             m_repository.Append(code);
         }

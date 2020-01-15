@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace Mini_C
 {
-    public class CASTIDENTIFIER : ASTComposite
+    public class CASTIDENTIFIER : ASTTerminal
     {
-        public CASTIDENTIFIER(string idText, nodeType type, ASTElement parent, int numContexts) : base(idText, type,
-           parent, numContexts)
-        {
+        public CASTIDENTIFIER(string idText, ASTElement parent) : base(idText, nodeType.NT_EXPRESSION_IDENTIFIER,
+           parent){
             m_nodeName = GenerateNodeName();
         }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
@@ -23,14 +22,13 @@ namespace Mini_C
         }
     }
 
-    public class CASTNUMBER : ASTComposite
+    public class CASTNUMBER : ASTTerminal
     {
         private int m_value;
         public int Value => m_value;
 
-        public CASTNUMBER(string numberText, nodeType type, ASTElement parent, int numContexts) : base(numberText, type,
-            parent, numContexts)
-        {
+        public CASTNUMBER(string numberText,  ASTElement parent) : base(numberText, nodeType.NT_EXPRESSION_NUMBER,
+            parent){
             m_value = Int32.Parse(numberText);
             m_nodeName = GenerateNodeName();
         }
@@ -46,7 +44,7 @@ namespace Mini_C
 
     public class CASTFunctionDefinition : ASTComposite
     {
-        public CASTFunctionDefinition(String text, nodeType type, ASTElement parent, int numContexts) : base(text,type, parent, numContexts) { }
+        public CASTFunctionDefinition(String text, ASTElement parent, int numContexts) : base(text,nodeType.NT_FUNCTIOΝDEFINITION, parent, numContexts) { }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitFunctionDefinition(this,param);
@@ -55,7 +53,7 @@ namespace Mini_C
 
     public class CASTExpressionMultiplication : ASTComposite
     {
-        public CASTExpressionMultiplication(string text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
+        public CASTExpressionMultiplication(string text, ASTElement parent, int numContexts) : base(text, nodeType.NT_EXPRESSION_MULTIPLICATION, parent, numContexts) { }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitMultiplication(this,param);
@@ -64,7 +62,7 @@ namespace Mini_C
 
     public class CASTExpressionDivision : ASTComposite
     {
-        public CASTExpressionDivision(string text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
+        public CASTExpressionDivision(string text, ASTElement parent, int numContexts) : base(text, nodeType.NT_EXPRESSION_DIVISION, parent, numContexts) { }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitDivision(this, param);
@@ -73,7 +71,7 @@ namespace Mini_C
 
     public class CASTExpressionAddition : ASTComposite
     {
-        public CASTExpressionAddition(string text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
+        public CASTExpressionAddition(string text, ASTElement parent, int numContexts) : base(text, nodeType.NT_EXPRESSION_ADDITION, parent, numContexts) { }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitAddition(this, param);
@@ -82,7 +80,7 @@ namespace Mini_C
 
     public class CASTExpressionSubtraction : ASTComposite
     {
-        public CASTExpressionSubtraction(string text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
+        public CASTExpressionSubtraction(string text, ASTElement parent, int numContexts) : base(text, nodeType.NT_EXPRESSION_SUBSTRACTION, parent, numContexts) { }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitSubtraction(this, param);
@@ -90,7 +88,7 @@ namespace Mini_C
     }
     public class CASTExpressionPlus : ASTComposite
     {
-        public CASTExpressionPlus(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
+        public CASTExpressionPlus(String text,  ASTElement parent, int numContexts) : base(text, nodeType.NT_EXPRESSION_PLUS, parent, numContexts) { }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitPLUS(this, param);
@@ -99,7 +97,7 @@ namespace Mini_C
 
     public class CASTExpressionMinus : ASTComposite
     {
-        public CASTExpressionMinus(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
+        public CASTExpressionMinus(String text, ASTElement parent, int numContexts) : base(text, nodeType.NT_EXPRESSION_MINUS, parent, numContexts) { }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitMINUS(this, param);
@@ -108,7 +106,7 @@ namespace Mini_C
     
     public class CASTExpressionAssign : ASTComposite
     {
-        public CASTExpressionAssign(string text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
+        public CASTExpressionAssign(string text, ASTElement parent, int numContexts) : base(text, nodeType.NT_EXPRESSION_ASSIGN, parent, numContexts) { }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitASSIGN(this, param);
@@ -116,7 +114,7 @@ namespace Mini_C
     }
     public class CASTExpressionNot : ASTComposite
     {
-        public CASTExpressionNot(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
+        public CASTExpressionNot(String text,  ASTElement parent, int numContexts) : base(text, nodeType.NT_EXPRESSION_NOT, parent, numContexts) { }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitNOT(this, param);
@@ -124,7 +122,7 @@ namespace Mini_C
     }
     public class CASTExpressionAnd : ASTComposite
     {
-        public CASTExpressionAnd(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
+        public CASTExpressionAnd(String text, ASTElement parent, int numContexts) : base(text, nodeType.NT_EXPRESSION_AND, parent, numContexts) { }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitAND(this, param);
@@ -133,7 +131,7 @@ namespace Mini_C
 
     public class CASTExpressionOr : ASTComposite
     {
-        public CASTExpressionOr(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
+        public CASTExpressionOr(String text, ASTElement parent, int numContexts) : base(text, nodeType.NT_EXPRESSION_OR, parent, numContexts) { }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitOR(this, param);
@@ -141,7 +139,7 @@ namespace Mini_C
     }
     public class CASTExpressionGt : ASTComposite
     {
-        public CASTExpressionGt(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
+        public CASTExpressionGt(String text, ASTElement parent, int numContexts) : base(text, nodeType.NT_EXPRESSION_GT, parent, numContexts) { }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitGT(this, param);
@@ -150,7 +148,7 @@ namespace Mini_C
 
     public class CASTExpressionGte : ASTComposite
     {
-        public CASTExpressionGte(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
+        public CASTExpressionGte(String text, ASTElement parent, int numContexts) : base(text, nodeType.NT_EXPRESSION_GTE, parent, numContexts) { }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitGTE(this, param);
@@ -159,7 +157,7 @@ namespace Mini_C
 
     public class CASTExpressionLt : ASTComposite
     {
-        public CASTExpressionLt(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
+        public CASTExpressionLt(String text, ASTElement parent, int numContexts) : base(text, nodeType.NT_EXPRESSION_LT, parent, numContexts) { }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitLT(this, param);
@@ -168,7 +166,7 @@ namespace Mini_C
 
     public class CASTExpressionLte : ASTComposite
     {
-        public CASTExpressionLte(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
+        public CASTExpressionLte(String text,  ASTElement parent, int numContexts) : base(text, nodeType.NT_EXPRESSION_LTE, parent, numContexts) { }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitLTE(this, param);
@@ -177,7 +175,7 @@ namespace Mini_C
 
     public class CASTExpressionEqual : ASTComposite
     {
-        public CASTExpressionEqual(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
+        public CASTExpressionEqual(String text,  ASTElement parent, int numContexts) : base(text, nodeType.NT_EXPRESSION_EQUAL, parent, numContexts) { }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitEQUAL(this, param);
@@ -186,7 +184,7 @@ namespace Mini_C
 
     public class CASTExpressionNequal : ASTComposite
     {
-        public CASTExpressionNequal(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
+        public CASTExpressionNequal(String text, ASTElement parent, int numContexts) : base(text, nodeType.NT_EXPRESSION_NEQUAL, parent, numContexts) { }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitNEQUAL(this, param);
@@ -195,7 +193,7 @@ namespace Mini_C
     
     public class CASTStatementList : ASTComposite
     {
-        public CASTStatementList(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
+        public CASTStatementList(String text, ASTElement parent, int numContexts) : base(text, nodeType.NT_STATEMENTLIST, parent, numContexts) { }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitSTATEMENTLIST(this, param);
@@ -203,7 +201,7 @@ namespace Mini_C
     }
     public class CASTCompoundStatement : ASTComposite
     {
-        public CASTCompoundStatement(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
+        public CASTCompoundStatement(String text, ASTElement parent, int numContexts) : base(text, nodeType.NT_COMPOUNDSTATEMENT, parent, numContexts) { }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitCOMPOUNDSTATEMENT(this, param);
@@ -212,7 +210,7 @@ namespace Mini_C
 
     public class CASTWhileStatement : ASTComposite
     {
-        public CASTWhileStatement(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
+        public CASTWhileStatement(String text, ASTElement parent, int numContexts) : base(text, nodeType.NT_WHILESTATEMENT, parent, numContexts) { }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitWHILESTATEMENT(this, param);
@@ -221,7 +219,7 @@ namespace Mini_C
 
     public class CASTIfStatement : ASTComposite
     {
-        public CASTIfStatement(String text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
+        public CASTIfStatement(String text, ASTElement parent, int numContexts) : base(text, nodeType.NT_IFSTATEMENT, parent, numContexts) { }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitIFSTATEMENT(this, param);
@@ -241,7 +239,7 @@ namespace Mini_C
    
     public class CASTCompileUnit : ASTComposite
     {
-        public CASTCompileUnit(string text, nodeType type, ASTElement parent, int numContexts) : base(text, type, parent, numContexts) { }
+        public CASTCompileUnit(string text,  ASTElement parent, int numContexts) : base(text, nodeType.NT_COMPILEUNIT, parent, numContexts) { }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
             return visitor.VisitCOMPILEUNIT(this, param);

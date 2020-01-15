@@ -41,9 +41,9 @@ namespace Mini_C
         NA = -1,
         CT_COMPILEUNIT_MAINBODY,
         CT_COMPILEUNIT_FUNCTIONDEFINITIONS,
-        CT_FUNCTION_IDENTIFIER,
-        CT_FUNCTION_FARGS,
-        CT_FUNCTION_BODY,
+        CT_FUNCTIONDEFINITION_IDENTIFIER,
+        CT_FUNCTIONDEFINITION_FARGS,
+        CT_FUNCTIONDEFINITION_BODY,
         CT_STATEMENT,
         CT_IFSTATEMENT_CONDITION,
         CT_IFSTATEMENT_IFCLAUSE,
@@ -155,10 +155,12 @@ namespace Mini_C
         }
     }
 
-    public abstract class ASTTerminal : ASTElement
-    {
-        protected ASTTerminal(string text, nodeType type, ASTElement parent) : base(text, type, parent) { 
+    public abstract class ASTTerminal : ASTElement {
+        private string m_text;
+        public string M_Text => base.m_text;
 
+        protected ASTTerminal(string text, nodeType type, ASTElement parent) : base(text, type, parent) {
+            m_text = text;
         }
 
     }

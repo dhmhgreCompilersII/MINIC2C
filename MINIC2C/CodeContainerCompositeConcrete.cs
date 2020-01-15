@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 namespace Mini_C
 {
     public class CCFunctionDefinition : CComboContainer {
+        private HashSet<string> m_localSymbolTable = new HashSet<string>();
+        
         public CCFunctionDefinition(CComboContainer parent) : base(CodeBlockType.CB_FUNCTIONDEFINITION,parent,3) {
         }
 
@@ -36,6 +38,8 @@ namespace Mini_C
     }
 
     public class CCFile : CComboContainer {
+        private HashSet<string> m_globalSymbolTable = new HashSet<string>();
+
         public CCFile() : base(CodeBlockType.CB_FILE,null,3) {
         }
 
