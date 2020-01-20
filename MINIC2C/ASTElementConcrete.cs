@@ -49,6 +49,17 @@ namespace Mini_C
         {
             return visitor.VisitFunctionDefinition(this,param);
         }
+
+        public string GetFunctionName() {
+            CASTIDENTIFIER id = GetChild(contextType.CT_FUNCTIONDEFINITION_IDENTIFIER, 0) as CASTIDENTIFIER;
+            return id.M_Text;
+        }
+
+        public string[] GetFunctionArgs() {
+            IEnumerable<CASTIDENTIFIER> args=m_children[GetContextIndex(contextType.CT_FUNCTIONDEFINITION_FARGS)].Select(a=>a as CASTIDENTIFIER);
+
+            return args.Select(a => a.M_Text).ToArray();
+        }
     }
 
     public class CASTExpressionMultiplication : ASTComposite

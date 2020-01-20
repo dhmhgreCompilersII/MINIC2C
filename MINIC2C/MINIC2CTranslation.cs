@@ -1,5 +1,7 @@
 ﻿
 
+using System.Linq;
+
 namespace Mini_C {
 
     public class TranslationParameters {
@@ -30,10 +32,21 @@ namespace Mini_C {
             //2. Add Function Definition to the File in the appropriate context
             param.M_Parent.AddCode(fundef,param.M_ContextType);
 
-            VisitContext(node, contextType.CT_FUNCTIONDEFINITION_IDENTIFIER, new TranslationParameters() {
-                M_Parent = fundef,
-                M_ContextType = CodeContextType.CC_FUNCTIONDEFINITION_HEADER
-            });
+            //3. Assemble the function header
+            CASTIDENTIFIER id = node.GetChild(contextType.CT_FUNCTIONDEFINITION_IDENTIFIER, 0) as CASTIDENTIFIER;
+
+            CEmmitableCodeContainer header = fundef.GetHeader();
+            header.AddCode("float "+id.M_Text +"(");
+            string last = node.GetFunctionArgs().Last();
+            foreach (string s in node.GetFunctionArgs()) {
+                header.AddCode("float "+s);
+                if (!s.Equals(last)) {
+                    header.AddCode(", ");
+                }
+            }
+            header.AddCode(")");
+
+
 
             VisitContext(node, contextType.CT_FUNCTIONDEFINITION_FARGS, new TranslationParameters() {
                 M_Parent = fundef,
@@ -76,12 +89,17 @@ namespace Mini_C {
         }
 
         public override CEmmitableCodeContainer VisitASSIGN(CASTExpressionAssign node, TranslationParameters param = default(TranslationParameters)) {
-            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY,param.M_Parent);
-            param.M_Parent.AddCode(rep,param.M_ContextType);
+            CCFunctionDefinition fun = param.M_Parent as CCFunctionDefinition;
 
-            
+            CEmmitableCodeContainer rep = fun.GetBody();
+
+            CASTIDENTIFIER id = node.GetChild(contextType.CT_EXPRESSION_ASSIGN_LVALUE, 0) as CASTIDENTIFIER;
+            fun.DeclareVariable(id.M_Text);
+            rep.AddCode(id.M_Text);
             rep.AddCode("=");
-
+            rep.AddCode(node.GetChild(contextType.CT_EXPRESSION_ASSIGN_EXPRESSION,0).M_Text);
+            rep.AddCode(";");
+            rep.AddNewLine();
             return rep;
             
         }

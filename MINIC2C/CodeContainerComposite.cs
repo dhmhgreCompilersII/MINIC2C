@@ -73,6 +73,7 @@ namespace Mini_C
         public abstract void AddCode(CodeContainer code, CodeContextType context=CodeContextType.CC_NA);
         public abstract void PrintStructure(StreamWriter m_ostream);
         public abstract string EmmitStdout();
+        public abstract void EmmitToFile(StreamWriter f);
         public virtual void EnterScope() {
             m_nestingLevel++; }
 
@@ -122,7 +123,14 @@ namespace Mini_C
         }
 
         public override string EmmitStdout() {
-            return AssemblyCodeContainer().ToString();
+            string s = AssemblyCodeContainer().ToString();
+            Console.WriteLine(s);
+            return s;
+        }
+
+        public override void EmmitToFile(StreamWriter f) {
+            string s = AssemblyCodeContainer().ToString();
+            f.WriteLine(s);
         }
 
         internal int GetContextIndex(CodeContextType ct)
@@ -163,9 +171,11 @@ namespace Mini_C
         public override void AddCode(string code, CodeContextType context=CodeContextType.CC_NA) {
             string[] lines = code.Split(new[] {'\n', '\r'});
             foreach (string line in lines) {
-                m_repository.Append(code);
-                m_repository.Append("\n");
-                m_repository.Append(new string('\t', m_nestingLevel));
+                m_repository.Append(line);
+                if (lines.Length > 1) {
+                    m_repository.Append("\n");
+                    m_repository.Append(new string('\t', m_nestingLevel));
+                }
             }
         }
 
@@ -191,6 +201,10 @@ namespace Mini_C
         {
            System.Console.WriteLine(m_repository.ToString());
            return m_repository.ToString();
+        }
+
+        public override void EmmitToFile(StreamWriter f) {
+            f.WriteLine(m_repository.ToString());
         }
 
         public override string ToString() {

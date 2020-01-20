@@ -23,7 +23,7 @@ namespace Mini_C
             return GetChild(CodeContextType.CC_FUNCTIONDEFINITION_BODY);
         }
 
-        public void DeclareLocalVariable(string varname) {
+        public virtual void DeclareVariable(string varname) {
             if (!m_localSymbolTable.Contains(varname)) {
                 m_localSymbolTable.Add(varname);
                 GetDeclarations().AddCode("float "+varname+";\n");
@@ -79,6 +79,11 @@ namespace Mini_C
         public CMainFunctionDefinition(CComboContainer parent) : base(parent) {
             string mainheader = "void main(int argc, char* argv[])";
             GetHeader().AddCode(mainheader);
+        }
+
+        public override void DeclareVariable(string varname) {
+            CCFile file = M_Parent as CCFile;
+            file.DeclareGlobalVariable(varname);
         }
     }
 

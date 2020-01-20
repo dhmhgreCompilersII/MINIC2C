@@ -12,7 +12,7 @@ namespace MINIC2C{
     class Program
     {
         static void Main(string[] args) {
-            StreamReader astream = new StreamReader("test.txt");
+            StreamReader astream = new StreamReader(args[0]);
 
             AntlrInputStream antlrStream = new AntlrInputStream(astream);
 
@@ -38,8 +38,13 @@ namespace MINIC2C{
             MINIC2CTranslation tr = new MINIC2CTranslation();
             tr.VisitCOMPILEUNIT(astGenerator.M_Root as CASTCompileUnit, new TranslationParameters());
             tr.M_TranslatedFile.EmmitStdout();
+            StreamWriter trFile = new StreamWriter(Path.GetFileName(args[0]+".c"));
+            tr.M_TranslatedFile.EmmitToFile(trFile);
+            trFile.Close();
             StreamWriter m_streamWriter =new StreamWriter("CodeStructure.dot");
             tr.M_TranslatedFile.PrintStructure(m_streamWriter);
+
+
             
         }
     }

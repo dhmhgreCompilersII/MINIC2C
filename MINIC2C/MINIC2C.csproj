@@ -90,6 +90,7 @@
     <Content Include="bin\Debug\test.ast.dot.gif" />
     <Content Include="bin\Debug\test.gif" />
     <Content Include="bin\Debug\test.txt" />
+    <Content Include="bin\Debug\test.txt.c" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

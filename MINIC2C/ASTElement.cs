@@ -111,6 +111,8 @@ namespace Mini_C
         public string MNodeName => m_nodeName;
         public int MSerial => m_serial;
 
+        public string M_Text => m_text;
+
         protected ASTElement(string text, nodeType type, ASTElement parent)
         {
             m_nodeType = type;
@@ -121,7 +123,7 @@ namespace Mini_C
     }
         public abstract class ASTComposite : ASTElement
     {
-        private List<ASTElement>[] m_children;
+        protected List<ASTElement>[] m_children;
 
         public List<ASTElement>[] MChildren => m_children;
 
