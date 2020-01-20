@@ -32,6 +32,7 @@ namespace Mini_C
         private static int m_serialNumberCounter=0;
         private string m_nodeName;
         private CComboContainer m_parent;
+        protected int m_nestingLevel = 0;
 
         protected CComboContainer M_Parent {
             get => m_parent;
@@ -48,12 +49,17 @@ namespace Mini_C
         public string M_NodeName {
             get => m_nodeName;
         }
+        protected int M_NestingLevel {
+            get => m_nestingLevel;
+            set => m_nestingLevel = value;
+        }
 
         protected CEmmitableCodeContainer(CodeBlockType nodeType, CComboContainer parent) {
             m_nodeType = nodeType;
             m_serialNumber = m_serialNumberCounter++;
             m_nodeName = m_nodeType + "_" + m_serialNumber;
             m_parent = parent;
+            m_nestingLevel = parent?.M_NestingLevel??0;
         }
 
         /// <summary>
@@ -63,9 +69,22 @@ namespace Mini_C
         /// </summary>
         /// <returns></returns>
         public abstract CodeContainer AssemblyCodeContainer();
-        public abstract void AddCode(String code, CodeContextType context);
+        public abstract void AddCode(String code, CodeContextType context=CodeContextType.CC_NA);
+        public abstract void AddCode(CodeContainer code, CodeContextType context=CodeContextType.CC_NA);
         public abstract void PrintStructure(StreamWriter m_ostream);
         public abstract string EmmitStdout();
+        public virtual void EnterScope() {
+            m_nestingLevel++; }
+
+        public virtual void LeaveScope() {
+            if (m_nestingLevel > 0) {
+                m_nestingLevel--;
+            }
+            else {
+                throw new Exception("Non-matched nesting");
+            }
+        }
+        public abstract void AddNewLine(CodeContextType context=CodeContextType.CC_NA);
     }
 
     public abstract class CComboContainer : CEmmitableCodeContainer
@@ -89,22 +108,21 @@ namespace Mini_C
             m_repository[GetContextIndex(context)].Add(container);
         }
 
+        public override void AddCode(CodeContainer code, CodeContextType context) {
+            m_repository[GetContextIndex(context)].Add(code);
+        }
+
         public void AddCode(CEmmitableCodeContainer code, CodeContextType context)        {                       
             m_repository[GetContextIndex(context)].Add(code);
         }
-        
-        public override string EmmitStdout()
-        {
-            int i = 0;
-            StringBuilder s =new StringBuilder();
-            for(i = 0; i < m_repository.Length; i++) {
-                foreach (CEmmitableCodeContainer codeContainer in m_repository[i])
-                {
-                    s.Append(codeContainer.EmmitStdout());
+        public override void AddNewLine(CodeContextType context) {
+            CodeContainer container = new CodeContainer(CodeBlockType.CB_NA, this);
+            container.AddNewLine();
+            m_repository[GetContextIndex(context)].Add(container);
+        }
 
-                }
-            }
-            return s.ToString();
+        public override string EmmitStdout() {
+            return AssemblyCodeContainer().ToString();
         }
 
         internal int GetContextIndex(CodeContextType ct)
@@ -114,6 +132,10 @@ namespace Mini_C
             return index;
         }
 
+        protected CEmmitableCodeContainer GetChild(CodeContextType ct, int index=0) {
+            return m_repository[GetContextIndex(ct)][index];
+        }
+        
         protected void ExtractSubgraphs(StreamWriter m_ostream, CodeContextType context) {
             if (m_repository[GetContextIndex(context)].Count != 0) {
                 m_ostream.WriteLine("\tsubgraph cluster" + m_clusterSerial++ + "{");
@@ -138,9 +160,31 @@ namespace Mini_C
         public CodeContainer(CodeBlockType nodeType,CComboContainer parent) : base(nodeType,parent) {
         }
 
-        public override void AddCode(string code, CodeContextType context=CodeContextType.CC_NA)
-        {
-            m_repository.Append(code);
+        public override void AddCode(string code, CodeContextType context=CodeContextType.CC_NA) {
+            string[] lines = code.Split(new[] {'\n', '\r'});
+            foreach (string line in lines) {
+                m_repository.Append(code);
+                m_repository.Append("\n");
+                m_repository.Append(new string('\t', m_nestingLevel));
+            }
+        }
+
+        public override void AddCode(CodeContainer code, CodeContextType context = CodeContextType.CC_NA) {
+            string str = code.ToString();
+            AddCode(str,context);
+        }
+        public override void AddNewLine(CodeContextType context=CodeContextType.CC_NA) {
+            m_repository.Append("\n");
+            m_repository.Append(new string('\t', m_nestingLevel));
+        }
+        public override void EnterScope() {
+            base.EnterScope();
+            AddNewLine();
+        }
+
+        public override void LeaveScope() {
+            base.LeaveScope();
+            AddNewLine();
         }
 
         public override string EmmitStdout()
@@ -148,6 +192,11 @@ namespace Mini_C
            System.Console.WriteLine(m_repository.ToString());
            return m_repository.ToString();
         }
+
+        public override string ToString() {
+            return m_repository.ToString();
+        }
+
         public override CodeContainer AssemblyCodeContainer() {
             return this;
         }

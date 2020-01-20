@@ -37,10 +37,10 @@ namespace MINIC2C{
 
             MINIC2CTranslation tr = new MINIC2CTranslation();
             tr.VisitCOMPILEUNIT(astGenerator.M_Root as CASTCompileUnit, new TranslationParameters());
-
+            tr.M_TranslatedFile.EmmitStdout();
             StreamWriter m_streamWriter =new StreamWriter("CodeStructure.dot");
             tr.M_TranslatedFile.PrintStructure(m_streamWriter);
-
+            
         }
     }
 }

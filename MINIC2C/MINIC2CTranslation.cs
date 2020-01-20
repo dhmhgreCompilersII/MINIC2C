@@ -26,16 +26,8 @@ namespace Mini_C {
 
             //1. Create Output File
             CCFunctionDefinition fundef = new CCFunctionDefinition(param.M_Parent);
-
-            //2. Create the repositories for Function Definition object
-            CodeContainer body  = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY,fundef);
-            fundef.AddCode(body,CodeContextType.CC_FUNCTIONDEFINITION_BODY);
-            CodeContainer declarations = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, fundef);
-            fundef.AddCode(declarations, CodeContextType.CC_FUNCTIONDEFINITION_DECLARATIONS);
-            CodeContainer header = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, fundef);
-            fundef.AddCode(header, CodeContextType.CC_FUNCTIONDEFINITION_HEADER);
-
-            //3. Add Function Definition to the File in the appropriate context
+            
+            //2. Add Function Definition to the File in the appropriate context
             param.M_Parent.AddCode(fundef,param.M_ContextType);
 
             VisitContext(node, contextType.CT_FUNCTIONDEFINITION_IDENTIFIER, new TranslationParameters() {
