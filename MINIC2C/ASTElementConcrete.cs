@@ -219,6 +219,20 @@ namespace Mini_C
         }
     }
 
+    public class CASTEpxressionStatement : ASTComposite {
+        public CASTEpxressionStatement(String text, ASTElement parent, int numContexts) : base(text, nodeType.NT_STATEMENT_EXPRESSION, parent, numContexts) { }
+        public override Result Accept<Result, VParam>(ASTBaseVisitor<Result, VParam> visitor, VParam param) {
+            return visitor.VisitSTATEMENTEXPRESSION(this, param);
+        }
+    }
+
+    public class CASTReturnStatement : ASTComposite {
+        public CASTReturnStatement(String text, ASTElement parent, int numContexts) : base(text, nodeType.NT_STATEMENT_RETURN, parent, numContexts) { }
+        public override Result Accept<Result, VParam>(ASTBaseVisitor<Result, VParam> visitor, VParam param) {
+            return visitor.VisitSTATEMENTRETURN(this, param);
+        }
+    }
+
     public class CASTWhileStatement : ASTComposite
     {
         public CASTWhileStatement(String text, ASTElement parent, int numContexts) : base(text, nodeType.NT_WHILESTATEMENT, parent, numContexts) { }

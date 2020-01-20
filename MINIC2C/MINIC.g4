@@ -10,11 +10,11 @@ compileUnit : (statement|functionDefinition)+
 functionDefinition : FUNCTION IDENTIFIER LP fargs? RP compoundStatement					
 				   ;
 
-statement : expression QM
-		  | ifstatement 
-		  | whilestatement
-		  | compoundStatement
-		  | RETURN expression QM
+statement : expression QM		#statement_ExpressionStatement
+		  | ifstatement			#statement_IfStatement
+		  | whilestatement		#statement_WhileStatement
+		  | compoundStatement	#statement_CompoundStatement
+		  | RETURN expression QM #statement_ReturnStatement
 		  ;
 
 ifstatement : IF LP expression RP statement (ELSE statement)?

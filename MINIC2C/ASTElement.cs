@@ -34,6 +34,8 @@ namespace Mini_C
         NT_EXPRESSION_LTE=38,
         NT_EXPRESSION_EQUAL=40,
         NT_EXPRESSION_NEQUAL=42,
+        NT_STATEMENT_EXPRESSION=44,
+        NT_STATEMENT_RETURN=45
     };
 
     public enum contextType
@@ -83,6 +85,8 @@ namespace Mini_C
         CT_EXPRESSION_EQUAL_RIGHT,
         CT_EXPRESSION_NEQUAL_LEFT,
         CT_EXPRESSION_NEQUAL_RIGHT,
+        CT_STATEMENT_EXPRESSION,
+        CT_STATEMENT_RETURN
     }
 
     public abstract class ASTElement

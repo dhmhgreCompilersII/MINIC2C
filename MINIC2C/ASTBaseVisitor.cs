@@ -8,7 +8,7 @@ namespace Mini_C
 {
     public abstract class ASTBaseVisitor<Result,VParam>
     {
-        public Result Visit(ASTComposite node, VParam param=default(VParam))
+        public Result Visit(ASTElement node, VParam param=default(VParam))
         {
             return node.Accept(this,param);
         }
@@ -146,6 +146,14 @@ namespace Mini_C
         public virtual Result VisitWHILESTATEMENT(CASTWhileStatement node, VParam param=default(VParam))
         {
             VisitChildren(node,param);
+            return default(Result);
+        }
+        public virtual Result VisitSTATEMENTEXPRESSION(CASTEpxressionStatement node, VParam param = default(VParam)) {
+            VisitChildren(node, param);
+            return default(Result);
+        }
+        public virtual Result VisitSTATEMENTRETURN(CASTReturnStatement node, VParam param = default(VParam)) {
+            VisitChildren(node, param);
             return default(Result);
         }
         public virtual Result VisitSTATEMENT(CASTStatement node, VParam param=default(VParam))
