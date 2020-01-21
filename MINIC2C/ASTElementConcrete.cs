@@ -114,7 +114,14 @@ namespace Mini_C
             return visitor.VisitMINUS(this, param);
         }
     }
-    
+
+    public class CASTExpressionInParenthesis : ASTComposite {
+        public CASTExpressionInParenthesis(String text, ASTElement parent, int numContexts) : base(text, nodeType.NT_EXPRESSION_PARENTHESIS, parent, numContexts) { }
+        public override Result Accept<Result, VParam>(ASTBaseVisitor<Result, VParam> visitor, VParam param) {
+            return visitor.VisitParenthesis(this, param);
+        }
+    }
+
     public class CASTExpressionAssign : ASTComposite
     {
         public CASTExpressionAssign(string text, ASTElement parent, int numContexts) : base(text, nodeType.NT_EXPRESSION_ASSIGN, parent, numContexts) { }

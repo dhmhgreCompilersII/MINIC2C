@@ -121,6 +121,131 @@ namespace Mini_C {
             return rep;
         }
 
+        public override CEmmitableCodeContainer VisitMultiplication(CASTExpressionMultiplication node,
+            TranslationParameters param = default(TranslationParameters)) {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_MULTIPLICATION_LEFT, 0), param).AssemblyCodeContainer());
+            rep.AddCode("*");
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_MULTIPLICATION_RIGHT, 0), param).AssemblyCodeContainer());
+            return rep;
+        }
+
+        public override CEmmitableCodeContainer VisitDivision(CASTExpressionDivision node,
+            TranslationParameters param = default(TranslationParameters)) {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_DIVISION_LEFT, 0), param).AssemblyCodeContainer());
+            rep.AddCode("/");
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_DIVISION_RIGHT, 0), param).AssemblyCodeContainer());
+            return rep;
+        }
+
+        public override CEmmitableCodeContainer VisitSubtraction(CASTExpressionSubtraction node,
+            TranslationParameters param = default(TranslationParameters)) {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_SUBTRACTION_LEFT, 0), param).AssemblyCodeContainer());
+            rep.AddCode("-");
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_SUBTRACTION_RIGHT, 0), param).AssemblyCodeContainer());
+            return rep;
+        }
+
+        public override CEmmitableCodeContainer VisitParenthesis(CASTExpressionInParenthesis node,
+            TranslationParameters param = default(TranslationParameters)) {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
+            rep.AddCode("(");
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_PARENTHESIS, 0), param).AssemblyCodeContainer());
+            rep.AddCode(")");
+            return rep;
+        }
+
+        public override CEmmitableCodeContainer VisitPLUS(CASTExpressionPlus node,
+            TranslationParameters param = default(TranslationParameters)) {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
+            rep.AddCode("+");
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_PLUS, 0), param).AssemblyCodeContainer());
+            return rep;
+        }
+
+        public override CEmmitableCodeContainer VisitMINUS(CASTExpressionMinus node,
+            TranslationParameters param = default(TranslationParameters)) {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
+            rep.AddCode("-");
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_MINUS, 0), param).AssemblyCodeContainer());
+            return rep;
+        }
+
+        public override CEmmitableCodeContainer VisitNOT(CASTExpressionNot node, TranslationParameters param = default(TranslationParameters)) {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
+            rep.AddCode("!");
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_NOT, 0), param).AssemblyCodeContainer());
+            return rep;
+        }
+
+        public override CEmmitableCodeContainer VisitAND(CASTExpressionAnd node, TranslationParameters param = default(TranslationParameters)) {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_AND_LEFT, 0), param).AssemblyCodeContainer());
+            rep.AddCode("&&");
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_AND_RIGHT, 0), param).AssemblyCodeContainer());
+            return rep;
+        }
+
+        public override CEmmitableCodeContainer VisitOR(CASTExpressionOr node, TranslationParameters param = default(TranslationParameters)) {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_OR_LEFT, 0), param).AssemblyCodeContainer());
+            rep.AddCode("||");
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_OR_RIGHT, 0), param).AssemblyCodeContainer());
+            return rep;
+        }
+
+        public override CEmmitableCodeContainer VisitGT(CASTExpressionGt node, TranslationParameters param = default(TranslationParameters)) {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_GT_LEFT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(">");
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_GT_RIGHT, 0), param).AssemblyCodeContainer());
+            return rep;
+        }
+
+        public override CEmmitableCodeContainer VisitGTE(CASTExpressionGte node, TranslationParameters param = default(TranslationParameters)) {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_GTE_LEFT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(">=");
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_GTE_RIGHT, 0), param).AssemblyCodeContainer());
+            return rep;
+        }
+
+        public override CEmmitableCodeContainer VisitLT(CASTExpressionLt node, TranslationParameters param = default(TranslationParameters)) {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_LT_LEFT, 0), param).AssemblyCodeContainer());
+            rep.AddCode("<");
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_LT_RIGHT, 0), param).AssemblyCodeContainer());
+            return rep;
+        }
+
+        public override CEmmitableCodeContainer VisitLTE(CASTExpressionLte node, TranslationParameters param = default(TranslationParameters)) {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_LTE_LEFT, 0), param).AssemblyCodeContainer());
+            rep.AddCode("<=");
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_LTE_RIGHT, 0), param).AssemblyCodeContainer());
+            return rep;
+        }
+
+        public override CEmmitableCodeContainer VisitEQUAL(CASTExpressionEqual node,
+            TranslationParameters param = default(TranslationParameters)) {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_EQUAL_LEFT, 0), param).AssemblyCodeContainer());
+            rep.AddCode("==");
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_EQUAL_RIGHT, 0), param).AssemblyCodeContainer());
+            return rep;
+        }
+
+        public override CEmmitableCodeContainer VisitNEQUAL(CASTExpressionNequal node,
+            TranslationParameters param = default(TranslationParameters)) {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_NEQUAL_LEFT, 0), param).AssemblyCodeContainer());
+            rep.AddCode("!=");
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_NEQUAL_RIGHT, 0), param).AssemblyCodeContainer());
+            return rep;
+        }
+
         public override CEmmitableCodeContainer VisitIDENTIFIER(CASTIDENTIFIER node,
             TranslationParameters param = default(TranslationParameters)) {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, null);

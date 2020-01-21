@@ -56,6 +56,10 @@ namespace Mini_C
             VisitChildren(node,param);
             return default(Result);
         }
+        public virtual Result VisitParenthesis(CASTExpressionInParenthesis node, VParam param = default(VParam)) {
+            VisitChildren(node, param);
+            return default(Result);
+        }
         public virtual Result VisitAddition(CASTExpressionAddition node, VParam param=default(VParam))
         {
             VisitChildren(node,param);

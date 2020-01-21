@@ -223,7 +223,14 @@ namespace Mini_C
             m_ostream.WriteLine("{0}->{1}", node.MParent.MNodeName, node.MNodeName);
             return 0;
         }
-        
+
+        public override int VisitParenthesis(CASTExpressionInParenthesis node, object param = default(object)) {
+            ExtractSubgraphs(node, contextType.CT_EXPRESSION_PARENTHESIS);
+            base.VisitParenthesis(node);
+            m_ostream.WriteLine("{0}->{1}", node.MParent.MNodeName, node.MNodeName);
+            return 0;
+        }
+
 
         public override int VisitNOT(CASTExpressionNot node, object param)
         {
