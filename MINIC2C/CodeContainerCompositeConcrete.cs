@@ -29,6 +29,12 @@ namespace Mini_C
                 GetDeclarations().AddCode("float "+varname+";\n");
             }
         }
+
+        public void AddVariableToLocalSymbolTable(string varname) {
+            if (!m_localSymbolTable.Contains(varname)) {
+                m_localSymbolTable.Add(varname);
+            }
+        }
         
         public CCFunctionDefinition(CComboContainer parent) : base(CodeBlockType.CB_FUNCTIONDEFINITION,parent,3) {
 
@@ -41,7 +47,7 @@ namespace Mini_C
         }
 
         public override CodeContainer AssemblyCodeContainer() {
-            CodeContainer rep =new CodeContainer(CodeBlockType.CB_NA,this);
+            CodeContainer rep =new CodeContainer(CodeBlockType.CB_NA,M_Parent);
             // 1. Emmit Header
             rep.AddCode(GetChild(CodeContextType.CC_FUNCTIONDEFINITION_HEADER,0).AssemblyCodeContainer());
             // 2. Emmit {
@@ -49,9 +55,11 @@ namespace Mini_C
             rep.EnterScope();
             
             // 3. Emmit Declarations
+            rep.AddCode("//  ***** Local declarations *****\n");
             rep.AddCode(GetChild(CodeContextType.CC_FUNCTIONDEFINITION_DECLARATIONS,0).AssemblyCodeContainer());
             rep.AddNewLine();
             // 4. Emmit Code Body
+            rep.AddCode("//  ***** Code Body *****\n");
             rep.AddCode(GetChild(CodeContextType.CC_FUNCTIONDEFINITION_BODY, 0).AssemblyCodeContainer());
             rep.AddNewLine();
 

@@ -7,10 +7,16 @@ namespace Mini_C {
     public class TranslationParameters {
         private CComboContainer m_parent=null;
         private CodeContextType m_contextType=CodeContextType.CC_NA;
+        private CCFunctionDefinition m_containerFunction=null;
 
         public CComboContainer M_Parent {
             get => m_parent;
             set => m_parent = value;
+        }
+
+        public CCFunctionDefinition M_ContainerFunction {
+            get => m_containerFunction;
+            set => m_containerFunction = value;
         }
 
         public CodeContextType M_ContextType {
@@ -43,19 +49,20 @@ namespace Mini_C {
                 if (!s.Equals(last)) {
                     header.AddCode(", ");
                 }
+                fundef.AddVariableToLocalSymbolTable(s);
             }
             header.AddCode(")");
 
-
-
             VisitContext(node, contextType.CT_FUNCTIONDEFINITION_FARGS, new TranslationParameters() {
                 M_Parent = fundef,
-                M_ContextType = CodeContextType.CC_FUNCTIONDEFINITION_HEADER
+                M_ContextType = CodeContextType.CC_FUNCTIONDEFINITION_HEADER,
+                M_ContainerFunction = fundef
             });
 
             VisitContext(node, contextType.CT_FUNCTIONDEFINITION_BODY, new TranslationParameters() {
                 M_Parent = fundef,
-                M_ContextType = CodeContextType.CC_FUNCTIONDEFINITION_BODY
+                M_ContextType = CodeContextType.CC_FUNCTIONDEFINITION_BODY,
+                M_ContainerFunction = fundef
             });
 
             return fundef;
@@ -73,7 +80,9 @@ namespace Mini_C {
             VisitContext(node, contextType.CT_COMPILEUNIT_MAINBODY,
                 new TranslationParameters() {
                     M_Parent = mainf ,
-                    M_ContextType = CodeContextType.CC_FUNCTIONDEFINITION_BODY
+                    M_ContextType = CodeContextType.CC_FUNCTIONDEFINITION_BODY,
+                    M_ContainerFunction = mainf
+
                 });
 
             // 3. Visit CT_COMPILEUNIT_FUNCTIONDEFINITIONS
@@ -97,11 +106,33 @@ namespace Mini_C {
             fun.DeclareVariable(id.M_Text);
             rep.AddCode(id.M_Text);
             rep.AddCode("=");
-            rep.AddCode(node.GetChild(contextType.CT_EXPRESSION_ASSIGN_EXPRESSION,0).M_Text);
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_ASSIGN_EXPRESSION,0),param).AssemblyCodeContainer());
             rep.AddCode(";");
             rep.AddNewLine();
             return rep;
-            
+        }
+
+        public override CEmmitableCodeContainer VisitAddition(CASTExpressionAddition node,
+            TranslationParameters param = default(TranslationParameters)) {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY,param.M_Parent);
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_ADDITION_LEFT, 0),param).AssemblyCodeContainer());
+            rep.AddCode("+");
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_ADDITION_RIGHT, 0),param).AssemblyCodeContainer());
+            return rep;
+        }
+
+        public override CEmmitableCodeContainer VisitIDENTIFIER(CASTIDENTIFIER node,
+            TranslationParameters param = default(TranslationParameters)) {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, null);
+            param.M_ContainerFunction.DeclareVariable(node.M_Text);
+            rep.AddCode(node.M_Text);
+            return rep;
+        }
+
+        public override CEmmitableCodeContainer VisitNUMBER(CASTNUMBER node, TranslationParameters param = default(TranslationParameters)) {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, null);
+            rep.AddCode(node.M_Text);
+            return rep;
         }
     }
 }

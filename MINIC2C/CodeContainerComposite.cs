@@ -169,10 +169,10 @@ namespace Mini_C
         }
 
         public override void AddCode(string code, CodeContextType context=CodeContextType.CC_NA) {
-            string[] lines = code.Split(new[] {'\n', '\r'});
+            string[] lines = code.Split(new[] {'\n', '\r'},StringSplitOptions.RemoveEmptyEntries);
             foreach (string line in lines) {
                 m_repository.Append(line);
-                if (lines.Length > 1) {
+                if (code.Contains('\n')) {
                     m_repository.Append("\n");
                     m_repository.Append(new string('\t', m_nestingLevel));
                 }
@@ -184,7 +184,7 @@ namespace Mini_C
             AddCode(str,context);
         }
         public override void AddNewLine(CodeContextType context=CodeContextType.CC_NA) {
-            m_repository.Append("\n");
+            m_repository.Append("\r\n");
             m_repository.Append(new string('\t', m_nestingLevel));
         }
         public override void EnterScope() {
@@ -196,12 +196,7 @@ namespace Mini_C
             base.LeaveScope();
             AddNewLine();
         }
-
-        public  void AddCode(CodeContainer code)
-        {
-            m_repository.Append(code.m_repository);
-        }
-
+        
         public override string EmmitStdout()
         {
            System.Console.WriteLine(m_repository.ToString());

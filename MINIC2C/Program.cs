@@ -12,6 +12,7 @@ namespace MINIC2C{
     class Program
     {
         static void Main(string[] args) {
+
             StreamReader astream = new StreamReader(args[0]);
 
             AntlrInputStream antlrStream = new AntlrInputStream(astream);

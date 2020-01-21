@@ -14,7 +14,7 @@ namespace Mini_C
         }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitIDENTIFIER(this);
+            return visitor.VisitIDENTIFIER(this,param);
         }
         public override string GenerateNodeName()
         {
@@ -34,7 +34,7 @@ namespace Mini_C
         }
         public override Result Accept<Result,VParam>(ASTBaseVisitor<Result,VParam> visitor,VParam param)
         {
-            return visitor.VisitNUMBER(this);
+            return visitor.VisitNUMBER(this,param);
         }
         public override string GenerateNodeName()
         {
