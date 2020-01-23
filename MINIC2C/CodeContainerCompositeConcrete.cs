@@ -8,25 +8,100 @@ using System.Threading.Tasks;
 
 namespace Mini_C
 {
+    public class CExpressionStatement : CComboContainer
+    {
+        public CExpressionStatement(CEmmitableCodeContainer parent) : base(CodeBlockType.CB_EXPRESSIONSTATEMENT, parent, 1) {
+        }
+
+        public override CodeContainer AssemblyCodeContainer()
+        {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, M_Parent);
+            rep.AddCode("printf(\"res=%f\\n\",");
+            rep.AddCode(AssemblyContext(CodeContextType.CB_EXPRESSIONSTATEMENT_BODY));
+            rep.AddCode(");");
+            rep.AddNewLine();
+            return rep;
+        }
+
+        public override void PrintStructure(StreamWriter m_ostream)
+        {
+            ExtractSubgraphs(m_ostream, CodeContextType.CB_EXPRESSIONSTATEMENT_BODY);
+
+            foreach (List<CEmmitableCodeContainer> cEmmitableCodeContainers in m_repository)
+            {
+                foreach (CEmmitableCodeContainer codeContainer in cEmmitableCodeContainers)
+                {
+                    codeContainer.PrintStructure(m_ostream);
+                }
+            }
+            m_ostream.WriteLine("\"{0}\"->\"{1}\"", M_Parent.M_NodeName, M_NodeName);
+        }
+    }
+    public class CCompoundStatement : CComboContainer {
+        public CCompoundStatement(CEmmitableCodeContainer parent) : base(CodeBlockType.CB_COMPOUNDSTATEMENT, parent, 1) {
+        }
+
+        public override CodeContainer AssemblyCodeContainer() {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, M_Parent);
+            rep.AddCode("{");
+            rep.EnterScope();
+            rep.AddCode(AssemblyContext(CodeContextType.CB_COMPOUNDSTATEMENT_BODY));
+            rep.LeaveScope();
+            rep.AddCode("}");
+            return rep;
+        }
+
+        public override void PrintStructure(StreamWriter m_ostream) {
+            ExtractSubgraphs(m_ostream, CodeContextType.CB_COMPOUNDSTATEMENT_BODY);
+            
+            foreach (List<CEmmitableCodeContainer> cEmmitableCodeContainers in m_repository)
+            {
+                foreach (CEmmitableCodeContainer codeContainer in cEmmitableCodeContainers)
+                {
+                    codeContainer.PrintStructure(m_ostream);
+                }
+            }
+            m_ostream.WriteLine("\"{0}\"->\"{1}\"", M_Parent.M_NodeName, M_NodeName);
+        }
+    }
+
+    public class CWhileStatement : CComboContainer {
+        public CWhileStatement(CEmmitableCodeContainer parent) : base(CodeBlockType.CB_WHILESTATEMENT, parent, 2) {
+        }
+
+        public override CodeContainer AssemblyCodeContainer() {
+            CodeContainer rep =new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, M_Parent);
+            rep.AddCode("while ( ");
+            rep.AddCode(AssemblyContext(CodeContextType.CC_WHILESTATEMENT_CONDITION));
+            rep.AddCode(" )");
+            rep.AddCode(AssemblyContext(CodeContextType.CC_WHILESTATEMENT_BODY));
+            return rep;
+        }
+
+        public override void PrintStructure(StreamWriter m_ostream) {
+            ExtractSubgraphs(m_ostream, CodeContextType.CC_WHILESTATEMENT_CONDITION);
+            ExtractSubgraphs(m_ostream, CodeContextType.CC_WHILESTATEMENT_BODY);
+
+            foreach (List<CEmmitableCodeContainer> cEmmitableCodeContainers in m_repository) {
+                foreach (CEmmitableCodeContainer codeContainer in cEmmitableCodeContainers) {
+                    codeContainer.PrintStructure(m_ostream);
+                }
+            }
+            m_ostream.WriteLine("\"{0}\"->\"{1}\"", M_Parent.M_NodeName, M_NodeName);
+        }
+    }
+
     public class CCFunctionDefinition : CComboContainer {
         private HashSet<string> m_localSymbolTable = new HashSet<string>();
 
-        public CEmmitableCodeContainer GetHeader() {
-            return GetChild(CodeContextType.CC_FUNCTIONDEFINITION_HEADER);
-        }
-
-        public CEmmitableCodeContainer GetDeclarations() {
-            return GetChild(CodeContextType.CC_FUNCTIONDEFINITION_DECLARATIONS);
-        }
-
-        public CEmmitableCodeContainer GetBody() {
-            return GetChild(CodeContextType.CC_FUNCTIONDEFINITION_BODY);
-        }
-
+        
         public virtual void DeclareVariable(string varname) {
+            CodeContainer rep;
             if (!m_localSymbolTable.Contains(varname)) {
+                rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, this);
                 m_localSymbolTable.Add(varname);
-                GetDeclarations().AddCode("float "+varname+";\n");
+                rep.AddCode("float "+varname+";\n",CodeContextType.CC_FUNCTIONDEFINITION_DECLARATIONS);
+                AddCode(rep, CodeContextType.CC_FUNCTIONDEFINITION_DECLARATIONS);
             }
         }
 
@@ -35,15 +110,8 @@ namespace Mini_C
                 m_localSymbolTable.Add(varname);
             }
         }
-        
-        public CCFunctionDefinition(CComboContainer parent) : base(CodeBlockType.CB_FUNCTIONDEFINITION,parent,3) {
 
-            CodeContainer body = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, this);
-            AddCode(body, CodeContextType.CC_FUNCTIONDEFINITION_BODY);
-            CodeContainer declarations = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, this);
-            AddCode(declarations, CodeContextType.CC_FUNCTIONDEFINITION_DECLARATIONS);
-            CodeContainer header = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, this);
-            AddCode(header, CodeContextType.CC_FUNCTIONDEFINITION_HEADER);
+        public CCFunctionDefinition(CEmmitableCodeContainer parent) : base(CodeBlockType.CB_FUNCTIONDEFINITION,parent,3) {
         }
 
         public override CodeContainer AssemblyCodeContainer() {
@@ -56,11 +124,11 @@ namespace Mini_C
             
             // 3. Emmit Declarations
             rep.AddCode("//  ***** Local declarations *****\n");
-            rep.AddCode(GetChild(CodeContextType.CC_FUNCTIONDEFINITION_DECLARATIONS,0).AssemblyCodeContainer());
+            rep.AddCode(AssemblyContext(CodeContextType.CC_FUNCTIONDEFINITION_DECLARATIONS));
             rep.AddNewLine();
             // 4. Emmit Code Body
             rep.AddCode("//  ***** Code Body *****\n");
-            rep.AddCode(GetChild(CodeContextType.CC_FUNCTIONDEFINITION_BODY, 0).AssemblyCodeContainer());
+            rep.AddCode(AssemblyContext(CodeContextType.CC_FUNCTIONDEFINITION_BODY));
             rep.AddNewLine();
 
             // 5. Emmit }
@@ -86,7 +154,7 @@ namespace Mini_C
     public class CMainFunctionDefinition : CCFunctionDefinition {
         public CMainFunctionDefinition(CComboContainer parent) : base(parent) {
             string mainheader = "void main(int argc, char* argv[])";
-            GetHeader().AddCode(mainheader);
+            AddCode(mainheader,CodeContextType.CC_FUNCTIONDEFINITION_HEADER);
         }
 
         public override void DeclareVariable(string varname) {
@@ -99,48 +167,43 @@ namespace Mini_C
         private HashSet<string> m_globalVarSymbolTable = new HashSet<string>();
         private HashSet<string> m_FunctionsSymbolTable = new HashSet<string>();
 
-        CEmmitableCodeContainer GetPreprocessorDefs() {
-            return GetChild(CodeContextType.CC_FILE_PREPROCESSOR);
-        }
-
-        CEmmitableCodeContainer GetGlobalsVarDeclarations() {
-            return GetChild(CodeContextType.CC_FILE_GLOBALVARS);
-        }
-
-        CEmmitableCodeContainer[] GetFunDefs() {
-            return m_repository[GetContextIndex(CodeContextType.CC_FILE_FUNDEF)].ToArray();
-        }
+        private CCFunctionDefinition m_mainDefinition=null;
+        public CCFunctionDefinition MainDefinition => m_mainDefinition;
 
         public void DeclareGlobalVariable(string varname) {
+            CodeContainer rep;
             if (!m_globalVarSymbolTable.Contains(varname)) {
                 m_globalVarSymbolTable.Add(varname);
-                GetGlobalsVarDeclarations().AddCode("float " + varname + ";\n");
+                rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY,this);
+                rep.AddCode("float " + varname + ";\n",CodeContextType.CC_FILE_GLOBALVARS);
+                AddCode(rep,CodeContextType.CC_FILE_GLOBALVARS);
             }
         }
 
         public void DeclareFunction(string funname,string funheader) {
+            CodeContainer rep;
             if (!m_FunctionsSymbolTable.Contains(funname)) {
+                rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, this);
                 m_globalVarSymbolTable.Add(funname);
-                GetGlobalsVarDeclarations().AddCode(funheader+";\n");
+                rep.AddCode(funheader+";\n",CodeContextType.CC_FILE_GLOBALVARS);
+                AddCode(rep, CodeContextType.CC_FILE_GLOBALVARS);
             }
         }
 
-        public CCFile() : base(CodeBlockType.CB_FILE,null,3) {
+        public CCFile(bool withStartUpFunction) : base(CodeBlockType.CB_FILE,null,3) {
 
-            CodeContainer prepro = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY,this);
-            AddCode(prepro,CodeContextType.CC_FILE_PREPROCESSOR);
-            CodeContainer globals =new CodeContainer(CodeBlockType.CB_CODEREPOSITORY,this);
-            AddCode(globals,CodeContextType.CC_FILE_GLOBALVARS);
+            if (withStartUpFunction) {
+                m_mainDefinition= new CMainFunctionDefinition(this);
+                AddCode(m_mainDefinition, CodeContextType.CC_FILE_FUNDEF);
+            }
         }
 
         public override CodeContainer AssemblyCodeContainer() {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_NA,null);
 
-            rep.AddCode(GetPreprocessorDefs().AssemblyCodeContainer());
-            rep.AddCode(GetGlobalsVarDeclarations().AssemblyCodeContainer());
-            foreach (CEmmitableCodeContainer codeContainer in GetFunDefs()) {
-                rep.AddCode(codeContainer.AssemblyCodeContainer());
-            }
+            rep.AddCode(AssemblyContext(CodeContextType.CC_FILE_PREPROCESSOR));
+            rep.AddCode(AssemblyContext(CodeContextType.CC_FILE_GLOBALVARS));
+            rep.AddCode(AssemblyContext(CodeContextType.CC_FILE_FUNDEF));
             return rep;
         }
 

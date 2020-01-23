@@ -23,7 +23,7 @@ namespace Mini_C
             }
             return default(Result);
         }
-
+        
         public Result VisitContext(ASTComposite node, contextType ct, VParam param = default(VParam)) {
 
             foreach (ASTElement item in node.MChildren[node.GetContextIndex(ct)]) {

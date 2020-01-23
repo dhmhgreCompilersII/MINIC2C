@@ -162,6 +162,11 @@ namespace Mini_C
             int i = GetContextIndex(ct);
             return m_children[i][index];
         }
+
+        internal ASTElement[] GetContextChildren(contextType ct) {
+            int i = GetContextIndex(ct);
+            return m_children[i].ToArray();
+        }
     }
 
     public abstract class ASTTerminal : ASTElement {

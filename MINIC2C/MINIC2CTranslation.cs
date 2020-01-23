@@ -5,23 +5,32 @@ using System.Linq;
 namespace Mini_C {
 
     public class TranslationParameters {
-        private CComboContainer m_parent=null;
-        private CodeContextType m_contextType=CodeContextType.CC_NA;
+        // Provides access to the ancestor container object. Provides 
+        // access to properties of the parent during construction of the
+        // current element
+        private CEmmitableCodeContainer m_parent=null;
+        // Provides access to the FunctionDefinition that
+        // hosts the current element. Provides access to the API
+        // of the container function i.e to Declare a variable etc
         private CCFunctionDefinition m_containerFunction=null;
+        // Provides the context of the parent container object
+        // where the current container shouldbe placed. Necessary 
+        // when the current object is created and placed in the parent
+        // at a specific context
+        private CodeContextType m_parentContextType=CodeContextType.CC_NA;
 
-        public CComboContainer M_Parent {
+        public CEmmitableCodeContainer M_Parent {
             get => m_parent;
             set => m_parent = value;
+        }
+        public CodeContextType M_ParentContextType {
+            get => m_parentContextType;
+            set => m_parentContextType = value;
         }
 
         public CCFunctionDefinition M_ContainerFunction {
             get => m_containerFunction;
             set => m_containerFunction = value;
-        }
-
-        public CodeContextType M_ContextType {
-            get => m_contextType;
-            set => m_contextType = value;
         }
     }
 
@@ -36,60 +45,49 @@ namespace Mini_C {
             CCFunctionDefinition fundef = new CCFunctionDefinition(param.M_Parent);
             
             //2. Add Function Definition to the File in the appropriate context
-            param.M_Parent.AddCode(fundef,param.M_ContextType);
+            param.M_Parent.AddCode(fundef,param.M_ParentContextType);
 
             //3. Assemble the function header
             CASTIDENTIFIER id = node.GetChild(contextType.CT_FUNCTIONDEFINITION_IDENTIFIER, 0) as CASTIDENTIFIER;
 
-            CEmmitableCodeContainer header = fundef.GetHeader();
-            header.AddCode("float "+id.M_Text +"(");
+            fundef.AddCode("float "+id.M_Text +"(",CodeContextType.CC_FUNCTIONDEFINITION_HEADER);
             string last = node.GetFunctionArgs().Last();
             foreach (string s in node.GetFunctionArgs()) {
-                header.AddCode("float "+s);
+                fundef.AddCode("float "+s, CodeContextType.CC_FUNCTIONDEFINITION_HEADER);
                 if (!s.Equals(last)) {
-                    header.AddCode(", ");
+                    fundef.AddCode(", ", CodeContextType.CC_FUNCTIONDEFINITION_HEADER);
                 }
                 fundef.AddVariableToLocalSymbolTable(s);
             }
-            header.AddCode(")");
-
-            VisitContext(node, contextType.CT_FUNCTIONDEFINITION_FARGS, new TranslationParameters() {
-                M_Parent = fundef,
-                M_ContextType = CodeContextType.CC_FUNCTIONDEFINITION_HEADER,
-                M_ContainerFunction = fundef
-            });
-
+            fundef.AddCode(")", CodeContextType.CC_FUNCTIONDEFINITION_HEADER);
+            
             VisitContext(node, contextType.CT_FUNCTIONDEFINITION_BODY, new TranslationParameters() {
                 M_Parent = fundef,
-                M_ContextType = CodeContextType.CC_FUNCTIONDEFINITION_BODY,
-                M_ContainerFunction = fundef
+                M_ContainerFunction = fundef,
+                M_ParentContextType = CodeContextType.CC_FUNCTIONDEFINITION_BODY
             });
 
             return fundef;
         }
 
         public override CEmmitableCodeContainer VisitCOMPILEUNIT(CASTCompileUnit node, TranslationParameters param) {
-
+            CCFunctionDefinition mainf;
             //1. Create Output File
-            m_translatedFile = new CCFile();
-
-            //2. Visit CT_COMPILEUNIT_MAINBODY and create main function
-            CMainFunctionDefinition mainf = new CMainFunctionDefinition(m_translatedFile);
-            m_translatedFile.AddCode(mainf,CodeContextType.CC_FILE_FUNDEF);
+            m_translatedFile = new CCFile(true);
+            mainf = m_translatedFile.MainDefinition;
 
             VisitContext(node, contextType.CT_COMPILEUNIT_MAINBODY,
                 new TranslationParameters() {
-                    M_Parent = mainf ,
-                    M_ContextType = CodeContextType.CC_FUNCTIONDEFINITION_BODY,
-                    M_ContainerFunction = mainf
-
+                    M_Parent = mainf,
+                    M_ContainerFunction = mainf,
+                    M_ParentContextType = CodeContextType.CC_FUNCTIONDEFINITION_BODY
                 });
 
             // 3. Visit CT_COMPILEUNIT_FUNCTIONDEFINITIONS
             VisitContext(node, contextType.CT_COMPILEUNIT_FUNCTIONDEFINITIONS,
                 new TranslationParameters() {
                     M_Parent = m_translatedFile,
-                    M_ContextType = CodeContextType.CC_FILE_FUNDEF
+                    M_ParentContextType = CodeContextType.CC_FILE_FUNDEF
                 });
 
             //3. Visit CT
@@ -98,53 +96,101 @@ namespace Mini_C {
         }
 
         public override CEmmitableCodeContainer VisitASSIGN(CASTExpressionAssign node, TranslationParameters param = default(TranslationParameters)) {
-            CCFunctionDefinition fun = param.M_Parent as CCFunctionDefinition;
+            CCFunctionDefinition fun = param.M_ContainerFunction as CCFunctionDefinition;
 
-            CEmmitableCodeContainer rep = fun.GetBody();
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY,param.M_Parent);
 
             CASTIDENTIFIER id = node.GetChild(contextType.CT_EXPRESSION_ASSIGN_LVALUE, 0) as CASTIDENTIFIER;
             fun.DeclareVariable(id.M_Text);
             rep.AddCode(id.M_Text);
             rep.AddCode("=");
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_ASSIGN_EXPRESSION,0),param).AssemblyCodeContainer());
-            rep.AddCode(";");
-            rep.AddNewLine();
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_ASSIGN_EXPRESSION,0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
+            param.M_Parent?.AddCode(rep,param.M_ParentContextType);
             return rep;
         }
 
         public override CEmmitableCodeContainer VisitAddition(CASTExpressionAddition node,
             TranslationParameters param = default(TranslationParameters)) {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY,param.M_Parent);
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_ADDITION_LEFT, 0),param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_ADDITION_LEFT, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
             rep.AddCode("+");
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_ADDITION_RIGHT, 0),param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_ADDITION_RIGHT, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
+            param.M_Parent?.AddCode(rep, param.M_ParentContextType);
             return rep;
         }
 
         public override CEmmitableCodeContainer VisitMultiplication(CASTExpressionMultiplication node,
             TranslationParameters param = default(TranslationParameters)) {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_MULTIPLICATION_LEFT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_MULTIPLICATION_LEFT, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
             rep.AddCode("*");
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_MULTIPLICATION_RIGHT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_MULTIPLICATION_RIGHT, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
+            param.M_Parent?.AddCode(rep, param.M_ParentContextType);
             return rep;
         }
 
         public override CEmmitableCodeContainer VisitDivision(CASTExpressionDivision node,
             TranslationParameters param = default(TranslationParameters)) {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_DIVISION_LEFT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_DIVISION_LEFT, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
             rep.AddCode("/");
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_DIVISION_RIGHT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_DIVISION_RIGHT, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
+            param.M_Parent?.AddCode(rep, param.M_ParentContextType);
             return rep;
         }
 
         public override CEmmitableCodeContainer VisitSubtraction(CASTExpressionSubtraction node,
             TranslationParameters param = default(TranslationParameters)) {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_SUBTRACTION_LEFT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_SUBTRACTION_LEFT, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
             rep.AddCode("-");
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_SUBTRACTION_RIGHT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_SUBTRACTION_RIGHT, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
+            param.M_Parent?.AddCode(rep, param.M_ParentContextType);
             return rep;
         }
 
@@ -152,8 +198,14 @@ namespace Mini_C {
             TranslationParameters param = default(TranslationParameters)) {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
             rep.AddCode("(");
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_PARENTHESIS, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_PARENTHESIS, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
             rep.AddCode(")");
+            param.M_Parent?.AddCode(rep, param.M_ParentContextType);
             return rep;
         }
 
@@ -161,7 +213,13 @@ namespace Mini_C {
             TranslationParameters param = default(TranslationParameters)) {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
             rep.AddCode("+");
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_PLUS, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_PLUS, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
+            param.M_Parent?.AddCode(rep, param.M_ParentContextType);
             return rep;
         }
 
@@ -169,94 +227,238 @@ namespace Mini_C {
             TranslationParameters param = default(TranslationParameters)) {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
             rep.AddCode("-");
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_MINUS, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_MINUS, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
+            param.M_Parent?.AddCode(rep, param.M_ParentContextType);
             return rep;
         }
 
         public override CEmmitableCodeContainer VisitNOT(CASTExpressionNot node, TranslationParameters param = default(TranslationParameters)) {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
             rep.AddCode("!");
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_NOT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_NOT, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
+            param.M_Parent?.AddCode(rep, param.M_ParentContextType);
             return rep;
         }
 
         public override CEmmitableCodeContainer VisitAND(CASTExpressionAnd node, TranslationParameters param = default(TranslationParameters)) {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_AND_LEFT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_AND_LEFT, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
             rep.AddCode("&&");
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_AND_RIGHT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_AND_RIGHT, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
+            param.M_Parent?.AddCode(rep, param.M_ParentContextType);
             return rep;
         }
 
         public override CEmmitableCodeContainer VisitOR(CASTExpressionOr node, TranslationParameters param = default(TranslationParameters)) {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_OR_LEFT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_OR_LEFT, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
             rep.AddCode("||");
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_OR_RIGHT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_OR_RIGHT, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
+            param.M_Parent?.AddCode(rep, param.M_ParentContextType);
             return rep;
         }
 
         public override CEmmitableCodeContainer VisitGT(CASTExpressionGt node, TranslationParameters param = default(TranslationParameters)) {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_GT_LEFT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_GT_LEFT, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
             rep.AddCode(">");
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_GT_RIGHT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_GT_RIGHT, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
+            param.M_Parent?.AddCode(rep, param.M_ParentContextType);
             return rep;
         }
 
         public override CEmmitableCodeContainer VisitGTE(CASTExpressionGte node, TranslationParameters param = default(TranslationParameters)) {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_GTE_LEFT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_GTE_LEFT, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
             rep.AddCode(">=");
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_GTE_RIGHT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_GTE_RIGHT, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
+            param.M_Parent?.AddCode(rep, param.M_ParentContextType);
             return rep;
         }
 
         public override CEmmitableCodeContainer VisitLT(CASTExpressionLt node, TranslationParameters param = default(TranslationParameters)) {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_LT_LEFT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_LT_LEFT, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
             rep.AddCode("<");
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_LT_RIGHT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_LT_RIGHT, 0), new TranslationParameters() {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
+            param.M_Parent?.AddCode(rep, param.M_ParentContextType);
             return rep;
         }
 
         public override CEmmitableCodeContainer VisitLTE(CASTExpressionLte node, TranslationParameters param = default(TranslationParameters)) {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_LTE_LEFT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_LTE_LEFT, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
             rep.AddCode("<=");
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_LTE_RIGHT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_LTE_RIGHT, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
+            param.M_Parent?.AddCode(rep, param.M_ParentContextType);
             return rep;
         }
 
         public override CEmmitableCodeContainer VisitEQUAL(CASTExpressionEqual node,
             TranslationParameters param = default(TranslationParameters)) {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_EQUAL_LEFT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_EQUAL_LEFT, 0), new TranslationParameters() {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
             rep.AddCode("==");
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_EQUAL_RIGHT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_EQUAL_RIGHT, 0), new TranslationParameters() {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
+            param.M_Parent?.AddCode(rep, param.M_ParentContextType);
             return rep;
         }
 
         public override CEmmitableCodeContainer VisitNEQUAL(CASTExpressionNequal node,
             TranslationParameters param = default(TranslationParameters)) {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_NEQUAL_LEFT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_NEQUAL_LEFT, 0), new TranslationParameters() {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
             rep.AddCode("!=");
-            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_NEQUAL_RIGHT, 0), param).AssemblyCodeContainer());
+            rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_NEQUAL_RIGHT, 0), new TranslationParameters() {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = null,
+                M_ParentContextType = CodeContextType.CC_NA
+            }).AssemblyCodeContainer());
+            param.M_Parent?.AddCode(rep, param.M_ParentContextType);
+            return rep;
+        }
+
+        public override CEmmitableCodeContainer VisitWHILESTATEMENT(CASTWhileStatement node,
+            TranslationParameters param = default(TranslationParameters)) {
+            CWhileStatement rep1 =new CWhileStatement(param.M_Parent);
+
+            Visit(node.GetChild(contextType.CT_WHILESTATEMENT_CONDITION, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_ParentContextType = CodeContextType.CC_WHILESTATEMENT_CONDITION,
+                M_Parent = rep1
+            });
+            Visit(node.GetChild(contextType.CT_WHILESTATEMENT_BODY, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_ParentContextType = CodeContextType.CC_WHILESTATEMENT_BODY,
+                M_Parent = rep1
+            });
+            param.M_Parent?.AddCode(rep1, param.M_ParentContextType);
+            return rep1;
+        }
+
+        public override CEmmitableCodeContainer VisitCOMPOUNDSTATEMENT(CASTCompoundStatement node,
+            TranslationParameters param = default(TranslationParameters)) {
+
+            CCompoundStatement cmpst= new CCompoundStatement(param.M_Parent);
+            Visit(node.GetChild(contextType.CT_COMPOUNDSTATEMENT, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = cmpst,
+                M_ParentContextType = CodeContextType.CB_COMPOUNDSTATEMENT_BODY
+            });
+            param.M_Parent?.AddCode(cmpst, param.M_ParentContextType);
+            return cmpst;
+        }
+
+        public override CEmmitableCodeContainer VisitSTATEMENTEXPRESSION(CASTEpxressionStatement node,
+            TranslationParameters param = default(TranslationParameters)) {
+            CExpressionStatement rep = new CExpressionStatement(param.M_Parent);
+            Visit(node.GetChild(contextType.CT_STATEMENT_EXPRESSION, 0), new TranslationParameters()
+            {
+                M_ContainerFunction = param.M_ContainerFunction,
+                M_Parent = rep,
+                M_ParentContextType = CodeContextType.CB_EXPRESSIONSTATEMENT_BODY
+            });
+            param.M_Parent?.AddCode(rep,param.M_ParentContextType);
             return rep;
         }
 
         public override CEmmitableCodeContainer VisitIDENTIFIER(CASTIDENTIFIER node,
             TranslationParameters param = default(TranslationParameters)) {
-            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, null);
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
             param.M_ContainerFunction.DeclareVariable(node.M_Text);
             rep.AddCode(node.M_Text);
+            param.M_Parent?.AddCode(rep, param.M_ParentContextType);
             return rep;
         }
 
         public override CEmmitableCodeContainer VisitNUMBER(CASTNUMBER node, TranslationParameters param = default(TranslationParameters)) {
-            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, null);
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
             rep.AddCode(node.M_Text);
+            param.M_Parent?.AddCode(rep, param.M_ParentContextType);
             return rep;
         }
     }
