@@ -1,0 +1,115 @@
+digraph {
+	subgraph cluster0{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		"NT_STATEMENT_EXPRESSION_1";"NT_WHILESTATEMENT_5";
+		label=CT_COMPILEUNIT_MAINBODY;
+	}
+	subgraph cluster1{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		"NT_EXPRESSION_ASSIGN_2";
+		label=CT_STATEMENT_EXPRESSION;
+	}
+	subgraph cluster2{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		"NT_EXPRESSION_IDENTIFIER_3_(a)";
+		label=CT_EXPRESSION_ASSIGN_LVALUE;
+	}
+	subgraph cluster3{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		"NT_EXPRESSION_NUMBER_4_(0)";
+		label=CT_EXPRESSION_ASSIGN_EXPRESSION;
+	}
+"NT_EXPRESSION_ASSIGN_2"->"NT_EXPRESSION_IDENTIFIER_3_(a)"
+"NT_EXPRESSION_ASSIGN_2"->"NT_EXPRESSION_NUMBER_4_(0)"
+"NT_STATEMENT_EXPRESSION_1"->"NT_EXPRESSION_ASSIGN_2"
+"NT_COMPILEUNIT_0"->"NT_STATEMENT_EXPRESSION_1"
+	subgraph cluster4{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		"NT_EXPRESSION_LT_6";
+		label=CT_WHILESTATEMENT_CONDITION;
+	}
+	subgraph cluster5{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		"NT_COMPOUNDSTATEMENT_9";
+		label=CT_WHILESTATEMENT_BODY;
+	}
+	subgraph cluster6{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		"NT_EXPRESSION_IDENTIFIER_7_(a)";
+		label=CT_EXPRESSION_LT_LEFT;
+	}
+	subgraph cluster7{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		"NT_EXPRESSION_NUMBER_8_(10)";
+		label=CT_EXPRESSION_LT_RIGHT;
+	}
+"NT_EXPRESSION_LT_6"->"NT_EXPRESSION_IDENTIFIER_7_(a)"
+"NT_EXPRESSION_LT_6"->"NT_EXPRESSION_NUMBER_8_(10)"
+"NT_WHILESTATEMENT_5"->"NT_EXPRESSION_LT_6"
+	subgraph cluster8{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		"NT_STATEMENT_EXPRESSION_10";
+		label=CT_COMPOUNDSTATEMENT;
+	}
+	subgraph cluster9{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		"NT_EXPRESSION_ASSIGN_11";
+		label=CT_STATEMENT_EXPRESSION;
+	}
+	subgraph cluster10{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		"NT_EXPRESSION_IDENTIFIER_12_(a)";
+		label=CT_EXPRESSION_ASSIGN_LVALUE;
+	}
+	subgraph cluster11{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		"NT_EXPRESSION_ADDITION_13";
+		label=CT_EXPRESSION_ASSIGN_EXPRESSION;
+	}
+"NT_EXPRESSION_ASSIGN_11"->"NT_EXPRESSION_IDENTIFIER_12_(a)"
+	subgraph cluster12{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		"NT_EXPRESSION_IDENTIFIER_14_(a)";
+		label=CT_EXPRESSION_ADDITION_LEFT;
+	}
+	subgraph cluster13{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		"NT_EXPRESSION_NUMBER_15_(1)";
+		label=CT_EXPRESSION_ADDITION_RIGHT;
+	}
+"NT_EXPRESSION_ADDITION_13"->"NT_EXPRESSION_IDENTIFIER_14_(a)"
+"NT_EXPRESSION_ADDITION_13"->"NT_EXPRESSION_NUMBER_15_(1)"
+"NT_EXPRESSION_ASSIGN_11"->"NT_EXPRESSION_ADDITION_13"
+"NT_STATEMENT_EXPRESSION_10"->"NT_EXPRESSION_ASSIGN_11"
+"NT_COMPOUNDSTATEMENT_9"->"NT_STATEMENT_EXPRESSION_10"
+"NT_WHILESTATEMENT_5"->"NT_COMPOUNDSTATEMENT_9"
+"NT_COMPILEUNIT_0"->"NT_WHILESTATEMENT_5"
+}

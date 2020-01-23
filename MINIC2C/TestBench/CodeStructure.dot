@@ -1,0 +1,75 @@
+digraph {
+	subgraph cluster0{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		CB_CODEREPOSITORY_5;
+		label=CC_FILE_GLOBALVARS;
+	}
+	subgraph cluster1{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		CB_FUNCTIONDEFINITION_1;
+		label=CC_FILE_FUNDEF;
+	}
+"CB_FILE_0"->"CB_CODEREPOSITORY_5"
+	subgraph cluster2{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		CB_EXPRESSIONSTATEMENT_3;CB_WHILESTATEMENT_7;
+		label=CC_FUNCTIONDEFINITION_BODY;
+	}
+	subgraph cluster3{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		CB_NA_2;
+		label=CC_FUNCTIONDEFINITION_HEADER;
+	}
+"CB_FUNCTIONDEFINITION_1"->"CB_NA_2"
+	subgraph cluster4{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		CB_CODEREPOSITORY_4;
+		label=CB_EXPRESSIONSTATEMENT_BODY;
+	}
+"CB_EXPRESSIONSTATEMENT_3"->"CB_CODEREPOSITORY_4"
+"CB_FUNCTIONDEFINITION_1"->"CB_EXPRESSIONSTATEMENT_3"
+	subgraph cluster5{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		CB_CODEREPOSITORY_8;
+		label=CC_WHILESTATEMENT_CONDITION;
+	}
+	subgraph cluster6{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		CB_COMPOUNDSTATEMENT_11;
+		label=CC_WHILESTATEMENT_BODY;
+	}
+"CB_WHILESTATEMENT_7"->"CB_CODEREPOSITORY_8"
+	subgraph cluster7{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		CB_EXPRESSIONSTATEMENT_12;
+		label=CB_COMPOUNDSTATEMENT_BODY;
+	}
+	subgraph cluster8{
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		CB_CODEREPOSITORY_13;
+		label=CB_EXPRESSIONSTATEMENT_BODY;
+	}
+"CB_EXPRESSIONSTATEMENT_12"->"CB_CODEREPOSITORY_13"
+"CB_COMPOUNDSTATEMENT_11"->"CB_EXPRESSIONSTATEMENT_12"
+"CB_WHILESTATEMENT_7"->"CB_COMPOUNDSTATEMENT_11"
+"CB_FUNCTIONDEFINITION_1"->"CB_WHILESTATEMENT_7"
+"CB_FILE_0"->"CB_FUNCTIONDEFINITION_1"
+}

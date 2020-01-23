@@ -71,11 +71,11 @@
     <None Include="obj\Debug\MINICParser.cs" />
     <None Include="obj\Debug\MINICVisitor.cs" />
     <Compile Include="STPrinter.cs" />
-    <None Include="bin\Debug\CodeStructure.dot" />
-    <None Include="bin\Debug\test.ast.dot" />
-    <None Include="bin\Debug\test.dot" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="TestBench\CodeStructure.dot" />
+    <None Include="TestBench\test.ast.dot" />
+    <None Include="TestBench\test.dot" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -86,13 +86,15 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="bin\Debug\CodeStructure.gif" />
-    <Content Include="bin\Debug\test.ast.dot.gif" />
-    <Content Include="bin\Debug\test.gif" />
-    <Content Include="bin\Debug\test.txt" />
-    <Content Include="bin\Debug\test.txt.c" />
+    <Folder Include="bin\Debug\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="TestBench\CodeStructure.gif" />
+    <Content Include="TestBench\test.ast.dot.gif" />
+    <Content Include="TestBench\test.gif" />
+    <Content Include="TestBench\test.txt" />
+    <Content Include="TestBench\test.txt.c" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
