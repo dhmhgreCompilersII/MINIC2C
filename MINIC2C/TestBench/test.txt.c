@@ -11,6 +11,12 @@ void main(int argc, char* argv[]){
 		//  ***** Code Body *****
 		printf("res=%f\n",a=a+1);
 		printf("res=%f\n",b=a+10);
+		if ( b>15 ){
+			//  ***** Local declarations *****
+			//  ***** Code Body *****
+			break;
+			
+		}
 		
 	}
 	

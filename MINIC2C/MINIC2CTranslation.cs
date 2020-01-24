@@ -455,6 +455,16 @@ namespace Mini_C {
             return rep;
         }
 
+        public override CEmmitableCodeContainer VisitSTATEMENTBREAK(CASTBreakStatement node,
+            TranslationParameters param = default(TranslationParameters)) {
+
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY,param.M_Parent);
+            rep.AddCode("break;");
+            rep.AddNewLine();
+            param.M_Parent?.AddCode(rep, param.M_ParentContextType);
+            return rep;
+        }
+
         public override CEmmitableCodeContainer VisitIDENTIFIER(CASTIDENTIFIER node,
             TranslationParameters param = default(TranslationParameters)) {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);

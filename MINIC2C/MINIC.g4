@@ -15,6 +15,7 @@ statement : expression QM		#statement_ExpressionStatement
 		  | whilestatement		#statement_WhileStatement
 		  | compoundStatement	#statement_CompoundStatement
 		  | RETURN expression QM #statement_ReturnStatement
+		  | BREAK QM			 #statement_BreakStatement
 		  ;
 
 ifstatement : IF LP expression RP statement (ELSE statement)?
@@ -65,6 +66,7 @@ RETURN :'return';
 IF:'if';
 ELSE:'else';
 WHILE:'while';
+BREAK: 'break';
 
 // Operators
 PLUS:'+'; 

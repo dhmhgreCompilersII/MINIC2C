@@ -240,6 +240,13 @@ namespace Mini_C
         }
     }
 
+    public class CASTBreakStatement : ASTComposite {
+        public CASTBreakStatement(String text, ASTElement parent, int numContexts) : base(text, nodeType.NT_STATEMENT_BREAK, parent, numContexts) { }
+        public override Result Accept<Result, VParam>(ASTBaseVisitor<Result, VParam> visitor, VParam param) {
+            return visitor.VisitSTATEMENTBREAK(this, param);
+        }
+    }
+
     public class CASTWhileStatement : ASTComposite
     {
         public CASTWhileStatement(String text, ASTElement parent, int numContexts) : base(text, nodeType.NT_WHILESTATEMENT, parent, numContexts) { }

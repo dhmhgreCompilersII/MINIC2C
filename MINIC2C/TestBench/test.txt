@@ -2,6 +2,9 @@ a=0;
 while (a<10){
    a=a+1;
    b=a+10;
+   if ( b > 15){
+    break;
+   }
 }
 
 function foo(a,b){

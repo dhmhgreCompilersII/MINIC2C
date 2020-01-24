@@ -36,8 +36,8 @@ namespace Mini_C
         NT_EXPRESSION_NEQUAL=42,
         NT_STATEMENT_EXPRESSION=44,
         NT_STATEMENT_RETURN=45,
-        NT_EXPRESSION_PARENTHESIS=46
-
+        NT_EXPRESSION_PARENTHESIS=46,
+        NT_STATEMENT_BREAK=47
     };
 
     public enum contextType

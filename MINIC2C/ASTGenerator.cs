@@ -287,6 +287,13 @@ namespace Mini_C
             return 0;
         }
 
+        public override int VisitStatement_BreakStatement(MINICParser.Statement_BreakStatementContext context) {
+            ASTComposite m_parent = m_parents.Peek();
+            CASTBreakStatement newnode = new CASTBreakStatement(context.GetText(), m_parents.Peek(), 0);
+            m_parent.AddChild(newnode, m_parentContext.Peek());
+            return 0;
+        }
+
         public override int VisitWhilestatement(MINICParser.WhilestatementContext context)
         {
             ASTComposite m_parent = m_parents.Peek();

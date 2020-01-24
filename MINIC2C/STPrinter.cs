@@ -366,6 +366,19 @@ namespace MINIC2C {
             return 0;
         }
 
+        public override int VisitStatement_BreakStatement(MINICParser.Statement_BreakStatementContext context) {
+            int serial = ms_serialCounter++;
+            string s = "Statement_Break_" + serial;
+            outFile.WriteLine("\"{0}\"->\"{1}\";", m_labels.Peek(), s);
+
+            m_labels.Push(s);
+
+            base.VisitChildren(context);
+
+            m_labels.Pop();
+            return 0;
+        }
+
         public override int VisitCompileUnit([NotNull] MINICParser.CompileUnitContext context) {
             int serial = ms_serialCounter++;
             string s = "CompileUnit_" + serial;

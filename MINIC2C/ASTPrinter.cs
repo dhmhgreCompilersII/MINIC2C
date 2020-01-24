@@ -199,6 +199,12 @@ namespace Mini_C
             return 0;
         }
 
+        public override int VisitSTATEMENTBREAK(CASTBreakStatement node, object param = default(object)) {
+            base.VisitSTATEMENTBREAK(node);
+            m_ostream.WriteLine("{0}->{1}", node.MParent.MNodeName, node.MNodeName);
+            return 0;
+        }
+
         public override int VisitWHILESTATEMENT(CASTWhileStatement node, object param)
         {
             ExtractSubgraphs(node, contextType.CT_WHILESTATEMENT_CONDITION);
