@@ -1,4 +1,13 @@
 a=0;
 while (a<10){
    a=a+1;
+   b=a+10;
+}
+
+function foo(a,b){
+    if ( a>1){
+        c = b;
+    }
+    c=a+b;
+    return c;
 }

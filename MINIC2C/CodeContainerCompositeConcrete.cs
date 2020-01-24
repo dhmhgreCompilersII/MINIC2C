@@ -8,6 +8,68 @@ using System.Threading.Tasks;
 
 namespace Mini_C
 {
+    public class CReturnStatement : CComboContainer {
+        public CReturnStatement(CEmmitableCodeContainer parent) : base(CodeBlockType.CB_RETURNSTATEMENT, parent, 1) {
+        }
+
+        public override CodeContainer AssemblyCodeContainer() {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, M_Parent);
+            rep.AddCode("return ");
+            rep.AddCode(AssemblyContext(CodeContextType.CC_RETURNSTATEMENT_BODY));
+            rep.AddCode(";");
+            rep.AddNewLine();
+            return rep;
+        }
+
+        public override void PrintStructure(StreamWriter m_ostream) {
+            ExtractSubgraphs(m_ostream, CodeContextType.CC_RETURNSTATEMENT_BODY);
+            
+            foreach (List<CEmmitableCodeContainer> cEmmitableCodeContainers in m_repository) {
+                foreach (CEmmitableCodeContainer codeContainer in cEmmitableCodeContainers) {
+                    codeContainer.PrintStructure(m_ostream);
+                }
+            }
+            m_ostream.WriteLine("\"{0}\"->\"{1}\"", M_Parent.M_NodeName, M_NodeName);
+        }
+    }
+
+    public class CIfStatement : CComboContainer
+    {
+        public CIfStatement(CEmmitableCodeContainer parent) : base(CodeBlockType.CB_IFSTATEMENT, parent, 3) {
+        }
+
+        public override CodeContainer AssemblyCodeContainer()
+        {
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, M_Parent);
+            rep.AddCode("if ( ");
+            rep.AddCode(AssemblyContext(CodeContextType.CC_IFSTATEMENT_CONDITION));
+            rep.AddCode(" )");
+            rep.AddCode(AssemblyContext(CodeContextType.CC_IFSTATEMENT_IFBODY));
+            if (GetContextChildren(CodeContextType.CC_IFSTATEMENT_ELSEBODY).Length != 0)
+            {
+                rep.AddCode("else");
+                rep.AddCode(AssemblyContext(CodeContextType.CC_IFSTATEMENT_ELSEBODY));
+            }
+
+            return rep;
+        }
+
+        public override void PrintStructure(StreamWriter m_ostream)
+        {
+            ExtractSubgraphs(m_ostream, CodeContextType.CC_IFSTATEMENT_CONDITION);
+            ExtractSubgraphs(m_ostream, CodeContextType.CC_IFSTATEMENT_IFBODY);
+            ExtractSubgraphs(m_ostream, CodeContextType.CC_IFSTATEMENT_ELSEBODY);
+
+            foreach (List<CEmmitableCodeContainer> cEmmitableCodeContainers in m_repository)
+            {
+                foreach (CEmmitableCodeContainer codeContainer in cEmmitableCodeContainers)
+                {
+                    codeContainer.PrintStructure(m_ostream);
+                }
+            }
+            m_ostream.WriteLine("\"{0}\"->\"{1}\"", M_Parent.M_NodeName, M_NodeName);
+        }
+    }
     public class CExpressionStatement : CComboContainer
     {
         public CExpressionStatement(CEmmitableCodeContainer parent) : base(CodeBlockType.CB_EXPRESSIONSTATEMENT, parent, 1) {
@@ -17,7 +79,7 @@ namespace Mini_C
         {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, M_Parent);
             rep.AddCode("printf(\"res=%f\\n\",");
-            rep.AddCode(AssemblyContext(CodeContextType.CB_EXPRESSIONSTATEMENT_BODY));
+            rep.AddCode(AssemblyContext(CodeContextType.CC_EXPRESSIONSTATEMENT_BODY));
             rep.AddCode(");");
             rep.AddNewLine();
             return rep;
@@ -25,7 +87,7 @@ namespace Mini_C
 
         public override void PrintStructure(StreamWriter m_ostream)
         {
-            ExtractSubgraphs(m_ostream, CodeContextType.CB_EXPRESSIONSTATEMENT_BODY);
+            ExtractSubgraphs(m_ostream, CodeContextType.CC_EXPRESSIONSTATEMENT_BODY);
 
             foreach (List<CEmmitableCodeContainer> cEmmitableCodeContainers in m_repository)
             {
@@ -38,22 +100,27 @@ namespace Mini_C
         }
     }
     public class CCompoundStatement : CComboContainer {
-        public CCompoundStatement(CEmmitableCodeContainer parent) : base(CodeBlockType.CB_COMPOUNDSTATEMENT, parent, 1) {
+        public CCompoundStatement(CEmmitableCodeContainer parent) : base(CodeBlockType.CB_COMPOUNDSTATEMENT, parent, 2) {
         }
 
         public override CodeContainer AssemblyCodeContainer() {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, M_Parent);
             rep.AddCode("{");
             rep.EnterScope();
-            rep.AddCode(AssemblyContext(CodeContextType.CB_COMPOUNDSTATEMENT_BODY));
+            rep.AddCode("//  ***** Local declarations *****");
+            rep.AddNewLine();
+            rep.AddCode(AssemblyContext(CodeContextType.CC_COMPOUNDSTATEMENT_DECLARATIONS));
+            rep.AddCode("//  ***** Code Body *****");
+            rep.AddNewLine();
+            rep.AddCode(AssemblyContext(CodeContextType.CC_COMPOUNDSTATEMENT_BODY));
             rep.LeaveScope();
             rep.AddCode("}");
             return rep;
         }
 
         public override void PrintStructure(StreamWriter m_ostream) {
-            ExtractSubgraphs(m_ostream, CodeContextType.CB_COMPOUNDSTATEMENT_BODY);
-            
+            ExtractSubgraphs(m_ostream, CodeContextType.CC_COMPOUNDSTATEMENT_BODY);
+            ExtractSubgraphs(m_ostream, CodeContextType.CC_COMPOUNDSTATEMENT_DECLARATIONS);
             foreach (List<CEmmitableCodeContainer> cEmmitableCodeContainers in m_repository)
             {
                 foreach (CEmmitableCodeContainer codeContainer in cEmmitableCodeContainers)
@@ -100,8 +167,10 @@ namespace Mini_C
             if (!m_localSymbolTable.Contains(varname)) {
                 rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, this);
                 m_localSymbolTable.Add(varname);
-                rep.AddCode("float "+varname+";\n",CodeContextType.CC_FUNCTIONDEFINITION_DECLARATIONS);
-                AddCode(rep, CodeContextType.CC_FUNCTIONDEFINITION_DECLARATIONS);
+
+                rep.AddCode("float "+varname+";\n",CodeContextType.CC_NA);
+                CEmmitableCodeContainer compoundst = GetChild(CodeContextType.CC_FUNCTIONDEFINITION_BODY);
+                compoundst.AddCode(rep, CodeContextType.CC_COMPOUNDSTATEMENT_DECLARATIONS);
             }
         }
 
@@ -111,34 +180,22 @@ namespace Mini_C
             }
         }
 
-        public CCFunctionDefinition(CEmmitableCodeContainer parent) : base(CodeBlockType.CB_FUNCTIONDEFINITION,parent,3) {
+        public CCFunctionDefinition(CEmmitableCodeContainer parent) : base(CodeBlockType.CB_FUNCTIONDEFINITION,parent,2) {
         }
 
         public override CodeContainer AssemblyCodeContainer() {
             CodeContainer rep =new CodeContainer(CodeBlockType.CB_NA,M_Parent);
             // 1. Emmit Header
-            rep.AddCode(GetChild(CodeContextType.CC_FUNCTIONDEFINITION_HEADER,0).AssemblyCodeContainer());
-            // 2. Emmit {
-            rep.AddCode("{");
-            rep.EnterScope();
+            rep.AddCode(AssemblyContext(CodeContextType.CC_FUNCTIONDEFINITION_HEADER));
             
-            // 3. Emmit Declarations
-            rep.AddCode("//  ***** Local declarations *****\n");
-            rep.AddCode(AssemblyContext(CodeContextType.CC_FUNCTIONDEFINITION_DECLARATIONS));
-            rep.AddNewLine();
-            // 4. Emmit Code Body
-            rep.AddCode("//  ***** Code Body *****\n");
+           // 4. Emmit Code Body
             rep.AddCode(AssemblyContext(CodeContextType.CC_FUNCTIONDEFINITION_BODY));
             rep.AddNewLine();
 
-            // 5. Emmit }
-            rep.LeaveScope();
-            rep.AddCode("}");
             return rep;
         }
 
         public override void PrintStructure(StreamWriter m_ostream) {
-            ExtractSubgraphs(m_ostream, CodeContextType.CC_FUNCTIONDEFINITION_DECLARATIONS);
             ExtractSubgraphs(m_ostream,CodeContextType.CC_FUNCTIONDEFINITION_BODY);
             ExtractSubgraphs(m_ostream,CodeContextType.CC_FUNCTIONDEFINITION_HEADER);
 
@@ -153,8 +210,10 @@ namespace Mini_C
 
     public class CMainFunctionDefinition : CCFunctionDefinition {
         public CMainFunctionDefinition(CComboContainer parent) : base(parent) {
+            CCompoundStatement cmpst = new CCompoundStatement(this);
             string mainheader = "void main(int argc, char* argv[])";
             AddCode(mainheader,CodeContextType.CC_FUNCTIONDEFINITION_HEADER);
+            AddCode(cmpst,CodeContextType.CC_FUNCTIONDEFINITION_BODY);
         }
 
         public override void DeclareVariable(string varname) {

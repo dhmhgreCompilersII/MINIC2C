@@ -12,10 +12,12 @@ namespace Mini_C
         CB_NA=-1,
         CB_FILE=0,
         CB_FUNCTIONDEFINITION=3,
-        CB_WHILESTATEMENT=6,
-        CB_COMPOUNDSTATEMENT=8,
-        CB_EXPRESSIONSTATEMENT=9,
-        CB_CODEREPOSITORY=10,
+        CB_WHILESTATEMENT=5,
+        CB_IFSTATEMENT = 7,
+        CB_COMPOUNDSTATEMENT=10,
+        CB_EXPRESSIONSTATEMENT=12,
+        CB_RETURNSTATEMENT=13,
+        CB_CODEREPOSITORY=14,
     };
 
     public enum CodeContextType
@@ -25,12 +27,16 @@ namespace Mini_C
         CC_FILE_GLOBALVARS,
         CC_FILE_FUNDEF,
         CC_FUNCTIONDEFINITION_HEADER,
-        CC_FUNCTIONDEFINITION_DECLARATIONS,
         CC_FUNCTIONDEFINITION_BODY,
         CC_WHILESTATEMENT_CONDITION,
         CC_WHILESTATEMENT_BODY,
-        CB_COMPOUNDSTATEMENT_BODY,
-        CB_EXPRESSIONSTATEMENT_BODY
+        CC_IFSTATEMENT_CONDITION,
+        CC_IFSTATEMENT_IFBODY,
+        CC_IFSTATEMENT_ELSEBODY,
+        CC_COMPOUNDSTATEMENT_DECLARATIONS,
+        CC_COMPOUNDSTATEMENT_BODY,
+        CC_EXPRESSIONSTATEMENT_BODY,
+        CC_RETURNSTATEMENT_BODY
     };
     public abstract class CEmmitableCodeContainer
     {
@@ -156,11 +162,11 @@ namespace Mini_C
             return index;
         }
 
-        protected CEmmitableCodeContainer GetChild(CodeContextType ct, int index=0) {
+        internal CEmmitableCodeContainer GetChild(CodeContextType ct, int index=0) {
             return m_repository[GetContextIndex(ct)][index];
         }
 
-        protected CEmmitableCodeContainer[] GetContextChildren(CodeContextType ct) {
+        internal CEmmitableCodeContainer[] GetContextChildren(CodeContextType ct) {
             return m_repository[GetContextIndex(ct)].ToArray();
         }
 
