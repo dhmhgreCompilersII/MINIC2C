@@ -160,17 +160,22 @@ namespace Mini_C
 
     public class CCFunctionDefinition : CComboContainer {
         private HashSet<string> m_localSymbolTable = new HashSet<string>();
-
+        private CCFile m_file;
         
-        public virtual void DeclareVariable(string varname) {
+        public virtual void DeclareVariable(string varname, bool isread) {
             CodeContainer rep;
             if (!m_localSymbolTable.Contains(varname)) {
-                rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, this);
-                m_localSymbolTable.Add(varname);
+                if (isread) {
+                    m_file.DeclareGlobalVariable(varname);
+                }
+                else {
+                    rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, this);
+                    m_localSymbolTable.Add(varname);
 
-                rep.AddCode("float "+varname+";\n",CodeContextType.CC_NA);
-                CEmmitableCodeContainer compoundst = GetChild(CodeContextType.CC_FUNCTIONDEFINITION_BODY);
-                compoundst.AddCode(rep, CodeContextType.CC_COMPOUNDSTATEMENT_DECLARATIONS);
+                    rep.AddCode("float " + varname + ";\n", CodeContextType.CC_NA);
+                    CEmmitableCodeContainer compoundst = GetChild(CodeContextType.CC_FUNCTIONDEFINITION_BODY);
+                    compoundst.AddCode(rep, CodeContextType.CC_COMPOUNDSTATEMENT_DECLARATIONS);
+                }
             }
         }
 
@@ -181,6 +186,7 @@ namespace Mini_C
         }
 
         public CCFunctionDefinition(CEmmitableCodeContainer parent) : base(CodeBlockType.CB_FUNCTIONDEFINITION,parent,2) {
+            m_file= parent as CCFile;
         }
 
         public override CodeContainer AssemblyCodeContainer() {
@@ -216,7 +222,7 @@ namespace Mini_C
             AddCode(cmpst,CodeContextType.CC_FUNCTIONDEFINITION_BODY);
         }
 
-        public override void DeclareVariable(string varname) {
+        public override void DeclareVariable(string varname,bool isread) {
             CCFile file = M_Parent as CCFile;
             file.DeclareGlobalVariable(varname);
         }

@@ -103,7 +103,7 @@ namespace Mini_C {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
             param.M_Parent?.AddCode(rep, param.M_ParentContextType);
             CASTIDENTIFIER id = node.GetChild(contextType.CT_EXPRESSION_ASSIGN_LVALUE, 0) as CASTIDENTIFIER;
-            fun.DeclareVariable(id.M_Text);
+            fun.DeclareVariable(id.M_Text,false);
             rep.AddCode(id.M_Text);
             rep.AddCode("=");
             rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_ASSIGN_EXPRESSION, 0), new TranslationParameters() {
@@ -468,7 +468,7 @@ namespace Mini_C {
         public override CEmmitableCodeContainer VisitIDENTIFIER(CASTIDENTIFIER node,
             TranslationParameters param = default(TranslationParameters)) {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
-            param.M_ContainerFunction.DeclareVariable(node.M_Text);
+            param.M_ContainerFunction.DeclareVariable(node.M_Text,true);
             rep.AddCode(node.M_Text);
             param.M_Parent?.AddCode(rep, param.M_ParentContextType);
             return rep;

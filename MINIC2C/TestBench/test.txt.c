@@ -2,6 +2,7 @@
 #include <stdlib.h>
 float a;
 float b;
+float d;
 void main(int argc, char* argv[]){
 	//  ***** Local declarations *****
 	//  ***** Code Body *****
@@ -28,7 +29,7 @@ float foo(float a, float b){
 	if ( a>1 ){
 		//  ***** Local declarations *****
 		//  ***** Code Body *****
-		printf("res=%f\n",c=b);
+		printf("res=%f\n",c=b+d);
 		
 	}
 	printf("res=%f\n",c=a+b);
