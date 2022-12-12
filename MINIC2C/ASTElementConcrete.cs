@@ -62,6 +62,13 @@ namespace Mini_C
         }
     }
 
+    public class CASTExpressionFCALL : ASTComposite {
+        public CASTExpressionFCALL(string text, ASTElement parent, int numContexts) : base(text, nodeType.NT_EXPRESSION_FCALL, parent, numContexts) { }
+        public override Result Accept<Result, VParam>(ASTBaseVisitor<Result, VParam> visitor, VParam param) {
+            return visitor.VisitFCALL(this, param);
+        }
+    }
+
     public class CASTExpressionMultiplication : ASTComposite
     {
         public CASTExpressionMultiplication(string text, ASTElement parent, int numContexts) : base(text, nodeType.NT_EXPRESSION_MULTIPLICATION, parent, numContexts) { }

@@ -149,6 +149,18 @@ namespace Mini_C
             return 0;
         }
 
+        public override int VisitExpr_FCALL(MINICParser.Expr_FCALLContext context) {
+            ASTComposite m_parent = m_parents.Peek();
+            CASTExpressionFCALL newnode = new CASTExpressionFCALL(context.GetText(), m_parents.Peek(), 2);
+            m_parent.AddChild(newnode, m_parentContext.Peek());
+            m_parents.Push(newnode);
+
+            this.VisitTerminalInContext(context, context.IDENTIFIER().Symbol, m_parentContext, contextType.CT_EXPRESSION_FCALLNAME);
+            this.VisitElementInContext(context.args(), m_parentContext, contextType.CT_EXPRESSION_FCALLARGS);
+            m_parents.Pop();
+            return 0;
+        }
+
         public override int VisitExpr_NOT(MINICParser.Expr_NOTContext context)
         {
             ASTComposite m_parent = m_parents.Peek();

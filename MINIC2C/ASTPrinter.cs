@@ -88,6 +88,17 @@ namespace Mini_C
             return base.VisitIDENTIFIER(node);
         }
 
+        public override int VisitFCALL(CASTExpressionFCALL node, object param = default(object)) {
+            ExtractSubgraphs(node, contextType.CT_EXPRESSION_FCALLNAME);
+            ExtractSubgraphs(node, contextType.CT_EXPRESSION_FCALLARGS);
+
+            base.VisitFCALL(node);
+
+            m_ostream.WriteLine("{0}->{1}", node.MParent.MNodeName, node.MNodeName);
+
+            return 0;
+        }
+
         public override int VisitNUMBER(CASTNUMBER node, object param)
         {
             m_ostream.WriteLine("{0}->{1}", node.MParent.MNodeName, node.MNodeName);

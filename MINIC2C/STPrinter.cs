@@ -31,6 +31,19 @@ namespace MINIC2C {
             return 0;
         }
 
+        public override int VisitExpr_FCALL(MINICParser.Expr_FCALLContext context) {
+            int serial = ms_serialCounter++;
+            string s = "FunctionCall_" + serial;
+            outFile.WriteLine("\"{0}\"->\"{1}\";", m_labels.Peek(), s);
+
+            m_labels.Push(s);
+
+            base.VisitChildren(context);
+
+            m_labels.Pop();
+            return 0;
+        }
+
         public override int VisitStatement(MINICParser.StatementContext context) {
             int serial = ms_serialCounter++;
             string s = "Statement_" + serial;

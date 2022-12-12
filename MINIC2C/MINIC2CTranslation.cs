@@ -114,6 +114,41 @@ namespace Mini_C {
             return rep;
         }
 
+        public override CEmmitableCodeContainer VisitFCALL(CASTExpressionFCALL node,
+            TranslationParameters param = default(TranslationParameters)) {
+            CCFunctionDefinition fun = param.M_ContainerFunction as CCFunctionDefinition;
+
+            CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);
+            param.M_Parent?.AddCode(rep, param.M_ParentContextType);
+
+            CASTIDENTIFIER id = node.GetChild(contextType.CT_EXPRESSION_FCALLNAME, 0) as CASTIDENTIFIER;
+            string funheader = "float " + id.M_Text + "(";
+            for (int i = 0; i < node.MChildren[1].Count; i++) {
+                if (i > 0) {
+                    funheader += "," ;
+                }
+                funheader += "float x" + i;
+            }
+            funheader += ")";
+            m_translatedFile.DeclareFunction(id.M_Text,funheader);
+            
+            rep.AddCode(id.M_Text);
+            rep.AddCode("(");
+            for (int i = 0; i < node.MChildren[1].Count; i++) {
+                if (i > 0) {
+                    rep.AddCode(",");
+                }
+                rep.AddCode(Visit(node.GetChild(contextType.CT_EXPRESSION_FCALLARGS, i), new TranslationParameters() {
+                    M_ContainerFunction = param.M_ContainerFunction,
+                    M_Parent = null,
+                    M_ParentContextType = CodeContextType.CC_NA
+                }).AssemblyCodeContainer());
+            }
+
+            rep.AddCode(")");
+            return rep;
+        }
+
         public override CEmmitableCodeContainer VisitAddition(CASTExpressionAddition node,
             TranslationParameters param = default(TranslationParameters)) {
             CodeContainer rep = new CodeContainer(CodeBlockType.CB_CODEREPOSITORY, param.M_Parent);

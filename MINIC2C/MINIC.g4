@@ -33,6 +33,7 @@ statementList : (statement)+
 
 expression : NUMBER											#expr_NUMBER	
 		   | IDENTIFIER										#expr_IDENTIFIER
+		   | IDENTIFIER LP args RP							#expr_FCALL
 		   | expression op=(DIV|MULT) expression 			#expr_DIVMULT   
 		   | expression op=(PLUS|MINUS) expression		    #expr_PLUSMINUS
 		   | PLUS expression								#expr_PLUS

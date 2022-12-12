@@ -64,12 +64,6 @@
       <DependentUpon>MINIC.g4</DependentUpon>
     </Compile>
     <Compile Include="MINIC2CTranslation.cs" />
-    <None Include="obj\Debug\MINICBaseListener.cs" />
-    <None Include="obj\Debug\MINICBaseVisitor.cs" />
-    <None Include="obj\Debug\MINICLexer.cs" />
-    <None Include="obj\Debug\MINICListener.cs" />
-    <None Include="obj\Debug\MINICParser.cs" />
-    <None Include="obj\Debug\MINICVisitor.cs" />
     <Compile Include="STPrinter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -87,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\Debug\" />
+    <Folder Include="obj\Debug\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="TestBench\CodeStructure.gif" />
